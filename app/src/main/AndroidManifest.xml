@@ -13,6 +13,9 @@
         android:theme="@style/Theme.ModAtlas"
         tools:targetApi="31">
         <activity
+            android:name=".SearchMods"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
