@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -18,12 +20,14 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
 
     private static final String state = "State";
-
     private Button signInButton;
-
-    private ImageView option;
-
+    private Spinner option;
     private ImageView mods;
+    private ImageView resourcePacks;
+    private ImageView dataPacks;
+    private ImageView shaders;
+    private ImageView modPacks;
+    private ImageView plugins;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +41,90 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        this.init();
+    }
+
+    private void init(){
         this.signInButton = findViewById(R.id.signInButton);
         this.option = findViewById(R.id.option);
         this.mods = findViewById(R.id.mods);
+        this.resourcePacks = findViewById(R.id.resourcePacks);
+        this.dataPacks = findViewById(R.id.dataPacks);
+        this.shaders = findViewById(R.id.shaders);
+        this.modPacks = findViewById(R.id.modPacks);
+        this.plugins = findViewById(R.id.plugins);
+        this.initListener();
+    }
+
+    private void initListener(){
+        this.option.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         this.mods.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent searchModsIntent = new Intent(MainActivity.this, SearchMods.class);
+                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
+                // Pass a string value
+                searchModsIntent.putExtra("id", "mods");
+                startActivity(searchModsIntent);
+            }
+        });
+
+        this.resourcePacks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
+                // Pass a string value
+                searchModsIntent.putExtra("id", "Resource Packs");
+                startActivity(searchModsIntent);
+            }
+        });
+
+        this.dataPacks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
+                // Pass a string value
+                searchModsIntent.putExtra("id", "Data Packs");
+                startActivity(searchModsIntent);
+            }
+        });
+
+        this.shaders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
+                // Pass a string value
+                searchModsIntent.putExtra("id", "Shaders");
+                startActivity(searchModsIntent);
+            }
+        });
+
+        this.modPacks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
+                // Pass a string value
+                searchModsIntent.putExtra("id", "Mod Packs");
+                startActivity(searchModsIntent);
+            }
+        });
+
+        this.plugins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
+                // Pass a string value
+                searchModsIntent.putExtra("id", "Plugins");
                 startActivity(searchModsIntent);
             }
         });

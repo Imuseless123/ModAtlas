@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ModAtlas</string>
+    <string-array name="options">
+        <item>Mod Packs</item>
+        <item>Favorite</item>
+    </string-array>
 </resources>
