@@ -2,13 +2,10 @@ package com.example.modatlas;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -17,11 +14,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.File;
 
+public class MainActivity extends AppCompatActivity {
     private static final String state = "State";
     private Button signInButton;
-    private Spinner option;
+    private Button mrpackButton;
     private ImageView mods;
     private ImageView resourcePacks;
     private ImageView dataPacks;
@@ -29,12 +27,16 @@ public class MainActivity extends AppCompatActivity {
     private ImageView modPacks;
     private ImageView plugins;
 
+    private boolean isSpinnerInitialized = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(state,"onCreate");
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        String modpacksFolder = getString(R.string.modpacks_folder);
+        createModpackFolder(modpacksFolder);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void init(){
         this.signInButton = findViewById(R.id.signInButton);
-        this.option = findViewById(R.id.option);
+        this.mrpackButton = findViewById(R.id.btnmrpack);
         this.mods = findViewById(R.id.mods);
         this.resourcePacks = findViewById(R.id.resourcePacks);
         this.dataPacks = findViewById(R.id.dataPacks);
@@ -57,15 +59,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initListener(){
-        this.option.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        this.mrpackButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onClick(View v) {
+                Intent ModPackIntent = new Intent(MainActivity.this, ModpackActivity.class);
+                startActivity(ModPackIntent);
             }
         });
 
@@ -176,5 +174,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Log.i(state,"onSaveInstanceState");
+    }
+
+
+    private void createModpackFolder(String folderName) {
+        File modpackDir = new File(getFilesDir(), folderName);
+        if (!modpackDir.exists()) {
+            boolean success = modpackDir.mkdir();
+            if (success) {
+                Log.d("ModpackManager", "Modpack folder created at: " + modpackDir.getAbsolutePath());
+            } else {
+                Log.e("ModpackManager", "Failed to create modpack folder");
+            }
+        }
     }
 }

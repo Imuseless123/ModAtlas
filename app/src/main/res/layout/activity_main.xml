@@ -20,12 +20,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="sign in"/>
-        <Spinner
-            android:id="@+id/option"
-            android:layout_width="100dp"
+        <Button
+            android:id="@+id/btnmrpack"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:entries="@array/options"/>
+            android:text="mrpack" />
     </RelativeLayout>
 
     <RelativeLayout
