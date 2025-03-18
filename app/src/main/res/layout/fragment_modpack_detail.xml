@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    android:paddingTop="32dp"
+    android:paddingBottom="32dp"
     android:background="@color/design_default_color_background">
 
     <TextView
@@ -14,6 +16,19 @@
         android:textStyle="bold"
         android:gravity="center"
         android:padding="10dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/textJsonContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:padding="5dp"/>
+    </ScrollView>
 
     <Button
         android:id="@+id/btnDeleteModpack"

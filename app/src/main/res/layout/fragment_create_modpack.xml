@@ -15,7 +15,20 @@
         android:hint="Enter Modpack Name"
         android:paddingTop="32dp"
         android:inputType="text" />
+    <Spinner
+        android:id="@+id/spinnerMinecraftVersion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
+    <Spinner
+        android:id="@+id/spinnerLoader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/spinnerLoaderVersion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <Button
         android:id="@+id/btnSave"
         android:layout_width="match_parent"

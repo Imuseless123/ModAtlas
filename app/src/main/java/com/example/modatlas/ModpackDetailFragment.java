@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ModpackDetailFragment extends Fragment {
     private static final String ARG_MODPACK_NAME = "modpack_name";
@@ -29,11 +30,25 @@ public class ModpackDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_modpack_detail, container, false);
         TextView textView = view.findViewById(R.id.textModpackName);
+        TextView textJsonContent = view.findViewById(R.id.textJsonContent);
         Button btnDelete = view.findViewById(R.id.btnDeleteModpack);
 
         if (getArguments() != null) {
             modpackName = getArguments().getString(ARG_MODPACK_NAME);
             textView.setText(modpackName);
+            // Load JSON file content
+            File jsonFile = new File(requireContext().getFilesDir(), "modpacks/" + modpackName + "/modrinth.index.json");
+            if (jsonFile.exists()) {
+                try {
+                    String jsonContent = new String(java.nio.file.Files.readAllBytes(jsonFile.toPath()));
+                    textJsonContent.setText(jsonContent);
+                } catch (IOException e) {
+                    textJsonContent.setText("Failed to load JSON file.");
+                    e.printStackTrace();
+                }
+            } else {
+                textJsonContent.setText("modrinth.index.json not found.");
+            }
         }
 
         // Delete modpack button click
