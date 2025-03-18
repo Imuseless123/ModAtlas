@@ -1,6 +1,5 @@
-package com.example.modatlas;
+package com.example.modatlas.fragments;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

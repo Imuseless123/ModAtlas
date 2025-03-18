@@ -12,6 +12,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.modatlas.fragments.CreateModpackFragment;
+import com.example.modatlas.fragments.ModpackAdapter;
+
 import java.io.File;
 import java.util.ArrayList;
 

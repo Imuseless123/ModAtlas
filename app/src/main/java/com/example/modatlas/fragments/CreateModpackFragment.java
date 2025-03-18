@@ -1,4 +1,4 @@
-package com.example.modatlas;
+package com.example.modatlas.fragments;
 
 import android.os.Bundle;
 
@@ -15,6 +15,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.example.modatlas.ModpackActivity;
+import com.example.modatlas.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
