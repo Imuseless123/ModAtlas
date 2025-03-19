@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ModAtlas</string>
+    <string-array name="options">
+        <item>Mod Packs</item>
+        <item>Favorite</item>
+    </string-array>
+    <string name="modpacks_folder">modpacks</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

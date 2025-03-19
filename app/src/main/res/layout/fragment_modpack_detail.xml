@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingVertical="32dp"
+    android:background="@color/design_default_color_background">
+
+    <TextView
+        android:id="@+id/textModpackName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="10dp"/>
+    <Button
+        android:id="@+id/btnAddContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="+ Add content"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="20dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/textJsonContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:padding="5dp"/>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnDeleteModpack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Modpack"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="20dp"/>
+</LinearLayout>
