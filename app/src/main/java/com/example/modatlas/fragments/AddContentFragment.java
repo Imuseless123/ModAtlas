@@ -13,15 +13,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.modatlas.R;
+import com.example.modatlas.models.Mod;
+import com.example.modatlas.models.ModrinthApi;
+import com.example.modatlas.models.ModrinthResponse;
+import com.example.modatlas.models.RetrofitClient;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddContentFragment extends Fragment {
     private static final String ARG_LOADER = "param1";
@@ -74,7 +81,7 @@ public class AddContentFragment extends Fragment {
             return;
         }
 
-        // Adjust the loader category if needed
+        // Adjust loader category
         String loaderCategory = loader;
         if ("fabric-loader".equals(loader)) {
             loaderCategory = "fabric";
@@ -82,42 +89,34 @@ public class AddContentFragment extends Fragment {
             loaderCategory = "quilt";
         }
 
-        String url = "https://api.modrinth.com/v2/search?query=" + query +
-                "&limit=20&offset=0&index=downloads&facets=[[" +
-                "\"categories:" + loaderCategory + "\"],[" +
-                "\"versions:" + version + "\"],[" +
-                "\"project_type:mod\"]]";
+        // Build facets JSON array
+        String facets = "[[\"categories:" + loaderCategory + "\"], [\"versions:" + version + "\"], [\"project_type:mod\"]]";
 
-        Log.v("ModrinthSearch", "Request URL: " + url);
+        ModrinthApi api = RetrofitClient.getApi();
+        Call<ModrinthResponse> call = api.searchMods(query, 20, 0, "relevance", facets);
 
-        new Thread(() -> {
-            try {
-                OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder()
-                        .url(url)
-                        .build();
+        call.enqueue(new Callback<ModrinthResponse>() {
+            @Override
+            public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Mod> mods = response.body().getHits();
+                    StringBuilder resultString = new StringBuilder();
+                    for (Mod mod : mods) {
+                        resultString.append(mod.getTitle()).append("\n");
+                    }
 
-                Response response = client.newCall(request).execute();
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-                String responseData = response.body().string();
-
-                JSONObject jsonObject = new JSONObject(responseData);
-                JSONArray results = jsonObject.getJSONArray("hits");
-
-                StringBuilder resultString = new StringBuilder();
-                for (int i = 0; i < results.length(); i++) {
-                    JSONObject mod = results.getJSONObject(i);
-                    resultString.append(mod.getString("title")).append("\n");
+                    resultText.setText(resultString.toString().isEmpty() ? "No results found" : resultString.toString());
+                } else {
+                    resultText.setText("Failed to retrieve mods.");
                 }
 
-                String finalResult = resultString.toString();
-                getActivity().runOnUiThread(() -> resultText.setText(finalResult.isEmpty() ? "No results found" : finalResult));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                getActivity().runOnUiThread(() -> resultText.setText("Error fetching data."));
             }
-        }).start();
+
+            @Override
+            public void onFailure(Call<ModrinthResponse> call, Throwable t) {
+                resultText.setText("Error: " + t.getMessage());
+            }
+        });
     }
+
 }
