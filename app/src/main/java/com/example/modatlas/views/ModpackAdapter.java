@@ -1,4 +1,4 @@
-package com.example.modatlas.fragments;
+package com.example.modatlas.views;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.modatlas.fragments.ModpackDetailFragment;
+
 import java.util.ArrayList;
 
 public class ModpackAdapter extends RecyclerView.Adapter<ModpackAdapter.ViewHolder> {

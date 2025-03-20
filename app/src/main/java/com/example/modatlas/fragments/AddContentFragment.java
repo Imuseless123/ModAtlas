@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.example.modatlas.R;
 import com.example.modatlas.models.Mod;
+import com.example.modatlas.models.ModFile;
+import com.example.modatlas.models.ModVersion;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.ModrinthResponse;
 import com.example.modatlas.models.RetrofitClient;
@@ -79,7 +81,7 @@ public class AddContentFragment extends Fragment {
         searchButton = view.findViewById(R.id.searchButton);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        adapter = new AddContentEntryAdapter(modList);
+        adapter = new AddContentEntryAdapter(modList,this::onModButtonClick);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
@@ -148,5 +150,52 @@ public class AddContentFragment extends Fragment {
             }
         });
     }
+    private void onModButtonClick(Mod mod) {
+        // Make an API call when the button is clicked
+        Log.v("Import","Import: "+ mod.getTitle());
+                if (mod.getSlug() == null) {
+            Log.e("AddContentEntryView", "Slug is null, cannot fetch versions.");
+            return;
+        }
+
+        ModrinthApi api = RetrofitClient.getApi();
+        Call<List<ModVersion>> call = api.getModVersions(mod.getSlug());
+        Log.v("Import","call: "+ mod.getSlug());
+
+        call.enqueue(new Callback<List<ModVersion>>() {
+            @Override
+            public void onResponse(Call<List<ModVersion>> call, Response<List<ModVersion>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String normalizedLoader = loader.replace("-loader", ""); // Normalize loader names
+
+                    for (ModVersion modVersion : response.body()) {
+                        if (modVersion.getGameVersions().contains(version) && modVersion.getLoaders().contains(normalizedLoader)) {
+                            if (!modVersion.getFiles().isEmpty()) {
+                                ModFile file = modVersion.getFiles().get(0); // Take the first file
+
+                                Log.d("Selected ModFile", "Filename: " + file.getFilename());
+                                Log.d("Selected ModFile", "SHA1: " + file.getHashes().getSha1());
+                                Log.d("Selected ModFile", "URL: " + file.getUrl());
+                                Log.d("Selected ModFile", "Size: " + file.getSize());
+
+                                // Use this file (e.g., download or store its URL)
+                                String downloadUrl = file.getUrl();
+                                return; // Stop searching after finding the first valid file
+                            }
+                        }
+                    }
+                    Log.e("AddContentEntryView", "No matching file found for loader: " + loader + " and version: " + version);
+                } else {
+                    Log.e("AddContentEntryView", "Failed to fetch versions: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ModVersion>> call, Throwable t) {
+                Log.e("AddContentEntryView", "Error fetching versions: " + t.getMessage());
+            }
+        });
+    }
+
 }
 

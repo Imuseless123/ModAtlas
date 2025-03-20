@@ -2,19 +2,26 @@ package com.example.modatlas.views;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.modatlas.R;
 import com.example.modatlas.models.Mod;
 
 import java.util.List;
 
 public class AddContentEntryAdapter extends RecyclerView.Adapter<AddContentEntryAdapter.AddContentEntryViewHolder> {
     private List<Mod> modList;
+    private OnModButtonClickListener listener;
 
-    public AddContentEntryAdapter(List<Mod> modList) {
+    public interface OnModButtonClickListener {
+        void onModButtonClick(Mod mod);
+    }
+    public AddContentEntryAdapter(List<Mod> modList, OnModButtonClickListener listener) {
         this.modList = modList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -25,7 +32,7 @@ public class AddContentEntryAdapter extends RecyclerView.Adapter<AddContentEntry
 
     @Override
     public void onBindViewHolder(@NonNull AddContentEntryViewHolder holder, int position) {
-        holder.bind(modList.get(position));
+        holder.bind(modList.get(position),listener);
     }
 
     @Override
@@ -34,6 +41,7 @@ public class AddContentEntryAdapter extends RecyclerView.Adapter<AddContentEntry
     }
 
     static class AddContentEntryViewHolder extends RecyclerView.ViewHolder {
+
         private AddContentEntryView addContentEntryView;
 
         public AddContentEntryViewHolder(@NonNull View itemView) {
@@ -41,8 +49,9 @@ public class AddContentEntryAdapter extends RecyclerView.Adapter<AddContentEntry
             addContentEntryView = (AddContentEntryView) itemView;
         }
 
-        public void bind(Mod mod) {
+        public void bind(Mod mod, OnModButtonClickListener listener) {
             addContentEntryView.bind(mod);
+            addContentEntryView.setOnActionButtonClickListener(slug -> listener.onModButtonClick(mod));
         }
     }
 }

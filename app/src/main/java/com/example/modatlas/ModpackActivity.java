@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.modatlas.fragments.CreateModpackFragment;
-import com.example.modatlas.fragments.ModpackAdapter;
+import com.example.modatlas.views.ModpackAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
