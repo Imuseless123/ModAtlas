@@ -15,6 +15,7 @@
         <EditText
             android:id="@+id/searchInput"
             android:layout_width="256dp"
+            android:layout_weight="0.8"
             android:layout_height="wrap_content"
             android:hint="Enter Mod Name"
             android:inputType="text"/>
@@ -24,10 +25,10 @@
             android:layout_height="wrap_content"
             android:text="Search"/>
     </LinearLayout>
-    <TextView
-        android:id="@+id/resultText"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="ADD MODS" />
+        android:layout_height="wrap_content"
+        android:layout_weight="0.9"/>
 
 </LinearLayout>

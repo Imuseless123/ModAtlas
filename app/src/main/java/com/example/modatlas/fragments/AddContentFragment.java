@@ -2,7 +2,10 @@ package com.example.modatlas.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,11 +20,13 @@ import com.example.modatlas.models.Mod;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.ModrinthResponse;
 import com.example.modatlas.models.RetrofitClient;
+import com.example.modatlas.views.AddContentEntryAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -38,7 +43,11 @@ public class AddContentFragment extends Fragment {
 
     private EditText searchInput;
     private Button searchButton;
-    private TextView resultText;
+    private RecyclerView recyclerView;
+    private AddContentEntryAdapter adapter;
+    private List<Mod> modList = new ArrayList<>();
+    private boolean isLoading = false;
+    private int currentPage = 0;
 
     public AddContentFragment() {
     }
@@ -68,55 +77,76 @@ public class AddContentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_content, container, false);
         searchInput = view.findViewById(R.id.searchInput);
         searchButton = view.findViewById(R.id.searchButton);
-        resultText = view.findViewById(R.id.resultText);
+        recyclerView = view.findViewById(R.id.recyclerView);
 
-        searchButton.setOnClickListener(v -> searchModrinth(searchInput.getText().toString()));
+        adapter = new AddContentEntryAdapter(modList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+        searchButton.setOnClickListener(v -> {
+            modList.clear();
+            adapter.notifyDataSetChanged();
+            currentPage = 0;
+            searchModrinth(searchInput.getText().toString(), true);
+        });
+
+        // Implement infinite scrolling
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) { // Check if scrolling down
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                    if (!isLoading && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount) {
+                        searchModrinth(searchInput.getText().toString(), false);
+                    }
+                }
+            }
+        });
 
         return view;
     }
 
-    private void searchModrinth(String query) {
+    private void searchModrinth(String query, boolean reset) {
         if (query.isEmpty()) {
-            resultText.setText("Enter a mod name to search.");
             return;
         }
 
-        // Adjust loader category
-        String loaderCategory = loader;
-        if ("fabric-loader".equals(loader)) {
-            loaderCategory = "fabric";
-        } else if ("quilt-loader".equals(loader)) {
-            loaderCategory = "quilt";
+        if (reset) {
+            modList.clear();
+            currentPage = 0;
+            isLoading = false;
         }
 
-        // Build facets JSON array
+        isLoading = true;
+        String loaderCategory = loader.equals("fabric-loader") ? "fabric" :
+                loader.equals("quilt-loader") ? "quilt" : loader;
+
         String facets = "[[\"categories:" + loaderCategory + "\"], [\"versions:" + version + "\"], [\"project_type:mod\"]]";
 
         ModrinthApi api = RetrofitClient.getApi();
-        Call<ModrinthResponse> call = api.searchMods(query, 20, 0, "relevance", facets);
+        Call<ModrinthResponse> call = api.searchMods(query, 20, currentPage * 20, "relevance", facets);
 
         call.enqueue(new Callback<ModrinthResponse>() {
             @Override
             public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Mod> mods = response.body().getHits();
-                    StringBuilder resultString = new StringBuilder();
-                    for (Mod mod : mods) {
-                        resultString.append(mod.getTitle()).append("\n");
-                    }
-
-                    resultText.setText(resultString.toString().isEmpty() ? "No results found" : resultString.toString());
-                } else {
-                    resultText.setText("Failed to retrieve mods.");
+                    modList.addAll(mods);
+                    adapter.notifyDataSetChanged();
+                    currentPage++;
                 }
-
+                isLoading = false;
             }
 
             @Override
             public void onFailure(Call<ModrinthResponse> call, Throwable t) {
-                resultText.setText("Error: " + t.getMessage());
+                isLoading = false;
             }
         });
     }
-
 }
+

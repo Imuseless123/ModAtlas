@@ -9,6 +9,8 @@ public class Mod {
 
     @SerializedName("slug")
     private String slug;
+    @SerializedName("author")
+    private String author;
 
     @SerializedName("title")
     private String title;
@@ -37,6 +39,7 @@ public class Mod {
     // Getters
     public String getProjectId() { return projectId; }
     public String getSlug() { return slug; }
+    public String getAuthor() { return author;}
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public List<String> getCategories() { return categories; }

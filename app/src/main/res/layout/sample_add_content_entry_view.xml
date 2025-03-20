@@ -3,12 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.modatlas.views.OrbitMenuView
+    <com.example.modatlas.views.AddContentEntryView
         style="@style/Widget.Theme.ModAtlas.MyView"
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:paddingLeft="20dp"
-        android:paddingBottom="40dp"
- />
+        android:paddingBottom="40dp" />
 
 </FrameLayout>

@@ -1,8 +1,8 @@
 <resources>
     <declare-styleable name="OrbitMenuView">
-        <attr name="exampleString" format="string" />
-        <attr name="exampleDimension" format="dimension" />
-        <attr name="exampleColor" format="color" />
-        <attr name="exampleDrawable" format="color|reference" />
+        <attr name="exampleString2" format="string" />
+        <attr name="exampleDimension2" format="dimension" />
+        <attr name="exampleColor2" format="color" />
+        <attr name="exampleDrawable2" format="color|reference" />
     </declare-styleable>
 </resources>
