@@ -6,6 +6,12 @@ public class ModFile {
     private long size;
     private Hashes hashes;
 
+    public ModFile(String filename, String url, long size, Hashes hashes){
+        this.filename = filename;
+        this.url = url;
+        this.size = size;
+        this.hashes = hashes;
+    }
     public String getFilename() { return filename; }
     public String getUrl() { return url; }
     public long getSize() { return size; }
