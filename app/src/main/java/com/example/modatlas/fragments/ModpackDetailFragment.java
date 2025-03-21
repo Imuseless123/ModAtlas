@@ -1,7 +1,12 @@
 package com.example.modatlas.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -29,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ModpackDetailFragment extends Fragment {
+    private ActivityResultLauncher<Intent> fileExportLauncher;
+
     private ModpackViewModel modpackViewModel;
     private ModFileAdapter modFileAdapter;
     private static final String ARG_MODPACK_NAME = "modpack_name";
@@ -51,6 +58,10 @@ public class ModpackDetailFragment extends Fragment {
         TextView textJsonContent = view.findViewById(R.id.textJsonContent);
         Button btnDelete = view.findViewById(R.id.btnDeleteModpack);
         RecyclerView recyclerModFiles = view.findViewById(R.id.recyclerModFiles);
+        Button btnExportModpack = view.findViewById(R.id.btnExportModpack);
+        btnExportModpack.setOnClickListener(v -> {
+            modpackViewModel.exportModpack(modpackName, requireActivity(), fileExportLauncher);
+        });
 
         // Set up RecyclerView
         recyclerModFiles.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -74,40 +85,6 @@ public class ModpackDetailFragment extends Fragment {
             modpackViewModel.getRawJson().observe(getViewLifecycleOwner(), textJsonContent::setText);
 
 
-//            // Load JSON file content
-//            File jsonFile = new File(requireContext().getFilesDir(), "modpacks/" + modpackName + "/modrinth.index.json");
-//            if (jsonFile.exists()) {
-//                try {
-//                    String jsonContent = new String(java.nio.file.Files.readAllBytes(jsonFile.toPath()));
-//                    textJsonContent.setText(jsonContent);
-//
-//                    // Parse JSON
-//                    JSONObject jsonObject = new JSONObject(jsonContent);
-//                    JSONObject dependencies = jsonObject.getJSONObject("dependencies");
-//
-//                    // Extract "minecraft" version
-//                    version = dependencies.optString("minecraft", "Unknown");
-//
-//                    // Find the first key that is NOT "minecraft"
-//                    loader = "";
-//                    Iterator<String> keys = dependencies.keys(); // Fix: Use keys() instead of keySet()
-//                    while (keys.hasNext()) {
-//                        String key = keys.next();
-//                        if (!key.equals("minecraft")) {
-//                            loader = key;
-//                            break;
-//                        }
-//                    }
-//
-//                } catch (IOException e) {
-//                    textJsonContent.setText("Failed to load JSON file.");
-//                    e.printStackTrace();
-//                } catch (JSONException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            } else {
-//                textJsonContent.setText("modrinth.index.json not found.");
-//            }
         }
 
         btnAddContent.setOnClickListener(v -> {
@@ -120,8 +97,17 @@ public class ModpackDetailFragment extends Fragment {
         // Delete modpack button click
         btnDelete.setOnClickListener(v -> deleteModpack());
 
+        fileExportLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                Uri uri = result.getData().getData();
+                if (uri != null) {
+                    modpackViewModel.handleExportResult(uri, requireContext(), new File(requireContext().getFilesDir(), "modpacks/" + modpackName + ".mrpack"));
+                }
+            }
+        });
         return view;
     }
+
 
     private void deleteModpack() {
         File modpackDir = new File(requireContext().getFilesDir(), "modpacks/" + modpackName);

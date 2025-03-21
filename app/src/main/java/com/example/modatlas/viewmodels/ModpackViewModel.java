@@ -2,10 +2,15 @@ package com.example.modatlas.viewmodels;
 
 import static java.security.AccessController.getContext;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -20,13 +25,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class ModpackViewModel extends AndroidViewModel {
     private final MutableLiveData<Modpack> modpackLiveData = new MutableLiveData<>();
@@ -288,7 +299,81 @@ public class ModpackViewModel extends AndroidViewModel {
             Toast.makeText(getApplication(), "Modpack folder creation failed", Toast.LENGTH_SHORT).show();
         }
     }
+    public void exportModpack(String modpackName, Activity activity, ActivityResultLauncher<Intent> launcher) {
+        File modpackDir = new File(getApplication().getFilesDir(), "modpacks/" + modpackName);
+        if (!modpackDir.exists()) {
+            Toast.makeText(getApplication(), "Modpack folder does not exist", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        File zipFile = new File(getApplication().getFilesDir(), "modpacks/" + modpackName + ".zip");
+        File mrpackFile = new File(getApplication().getFilesDir(), "modpacks/" + modpackName + ".mrpack");
+
+        try {
+            // Zip the folder
+            zipFolder(modpackDir, zipFile);
+            // Rename .zip to .mrpack
+            if (zipFile.renameTo(mrpackFile)) {
+                showFilePickerAndExport(activity, mrpackFile, launcher);
+            } else {
+                Toast.makeText(getApplication(), "Failed to rename .zip to .mrpack", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            Log.e("ModpackViewModel", "Error exporting modpack: " + e.getMessage());
+            Toast.makeText(getApplication(), "Export failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void zipFolder(File folder, File zipFile) throws IOException {
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
+            File[] files = folder.listFiles();
+            if (files == null) return;
+
+            for (File file : files) {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry entry = new ZipEntry(file.getName());
+                    zos.putNextEntry(entry);
+
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fis.read(buffer)) > 0) {
+                        zos.write(buffer, 0, length);
+                    }
+
+                    zos.closeEntry();
+                }
+            }
+        }
+    }
+
+    private void showFilePickerAndExport(Activity activity, File file, ActivityResultLauncher<Intent> launcher) {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/octet-stream"); // For .mrpack files
+        intent.putExtra(Intent.EXTRA_TITLE, file.getName());
+
+        launcher.launch(intent);
+    }
+
+    public void handleExportResult(Uri uri, Context context, File sourceFile) {
+        try (InputStream inputStream = new FileInputStream(sourceFile);
+             OutputStream outputStream = context.getContentResolver().openOutputStream(uri)) {
+
+            if (outputStream == null) {
+                Toast.makeText(context, "Failed to export file", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            Toast.makeText(context, "Modpack exported successfully!", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Log.e("ModpackViewModel", "Error exporting file: " + e.getMessage());
+        }
+    }
 
 
 }

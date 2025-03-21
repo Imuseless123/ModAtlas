@@ -15,6 +15,14 @@
         android:gravity="center"
         android:padding="10dp"/>
     <Button
+        android:id="@+id/btnExportModpack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Export Modpack"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="10dp"/>
+    <Button
         android:id="@+id/btnAddContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
