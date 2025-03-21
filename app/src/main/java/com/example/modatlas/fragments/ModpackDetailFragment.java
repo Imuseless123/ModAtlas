@@ -33,8 +33,6 @@ public class ModpackDetailFragment extends Fragment {
     private ModFileAdapter modFileAdapter;
     private static final String ARG_MODPACK_NAME = "modpack_name";
     private String modpackName;
-    private String loader;
-    private String version;
 
     public static ModpackDetailFragment newInstance(String modpackName) {
         ModpackDetailFragment fragment = new ModpackDetailFragment();

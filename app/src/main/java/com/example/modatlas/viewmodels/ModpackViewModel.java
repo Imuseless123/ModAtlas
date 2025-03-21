@@ -1,7 +1,10 @@
 package com.example.modatlas.viewmodels;
 
+import static java.security.AccessController.getContext;
+
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -17,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -107,6 +111,12 @@ public class ModpackViewModel extends AndroidViewModel {
         }
     }
     public void addModFile(ModFile modFile) {
+        if(modpackLiveData.getValue().getFiles().contains(modFile)){
+            Toast.makeText(getApplication(), modFile.getFilename()+" is already exists in the pack", Toast.LENGTH_SHORT).show();
+
+            return;
+        }
+
         File jsonFile = new File(getApplication().getFilesDir(), "modpacks/"+modpackLiveData.getValue().getName()+"/modrinth.index.json");
 
         if (!jsonFile.exists()) {
@@ -239,6 +249,46 @@ public class ModpackViewModel extends AndroidViewModel {
             Log.e("ModpackViewModel", "Error removing mod file: " + e.getMessage());
         }
     }
+    public void createModpack(String modpackName, String minecraftVersion, String loader) {
+        if (modpackName.isEmpty() || minecraftVersion.isEmpty() || loader.isEmpty()) {
+            Toast.makeText(getApplication(), "Please fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        File modpackDir = new File(getApplication().getFilesDir(), "modpacks/" + modpackName);
+        if (!modpackDir.exists() && modpackDir.mkdirs()) {
+            File jsonFile = new File(modpackDir, "modrinth.index.json");
+
+            try (FileWriter writer = new FileWriter(jsonFile)) {
+                JSONObject modpackJson = new JSONObject();
+                modpackJson.put("formatVersion", 1);
+                modpackJson.put("game", "minecraft");
+                modpackJson.put("name", modpackName);
+
+                JSONObject dependencies = new JSONObject();
+                dependencies.put("minecraft", minecraftVersion);
+                dependencies.put(loader , "latest");
+
+                modpackJson.put("files", new JSONArray()); // Empty mods list
+                modpackJson.put("dependencies", dependencies);
+
+
+                writer.write(modpackJson.toString(4));
+
+                // Load the created modpack into LiveData
+                Modpack modpack = new Modpack(modpackName, minecraftVersion, loader, "latest", new ArrayList<>());
+                modpackLiveData.postValue(modpack);
+
+                Log.d("ModpackViewModel", "New modpack created: " + modpackName);
+
+            } catch (IOException | JSONException e) {
+                Log.e("ModpackViewModel", "Error creating modpack: " + e.getMessage());
+            }
+        } else {
+            Toast.makeText(getApplication(), "Modpack folder creation failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
 
 }
