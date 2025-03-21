@@ -149,11 +149,96 @@ public class ModpackViewModel extends AndroidViewModel {
             // Write back to file
             Files.write(jsonFile.toPath(), jsonObject.toString(4).getBytes());
 
+            // Update LiveData
+            Modpack currentModpack = modpackLiveData.getValue();
+            if (currentModpack != null) {
+                List<ModFile> updatedFiles = new ArrayList<>(currentModpack.getFiles());
+                updatedFiles.add(modFile);
+                Modpack updatedModpack = new Modpack(
+                        currentModpack.getName(),
+                        currentModpack.getMinecraftVersion(),
+                        currentModpack.getLoader(),
+                        currentModpack.getLoaderVersion(),
+                        updatedFiles
+                );
+                modpackLiveData.postValue(updatedModpack);
+            }
+
             Log.d("ModpackViewModel", "Mod file added: " + modFile.getFilename());
 
         } catch (IOException | JSONException e) {
             Log.e("ModpackViewModel", "Error adding mod file: " + e.getMessage());
         }
     }
+    public void removeModFile(ModFile modFile) {
+        File jsonFile = new File(getApplication().getFilesDir(), "modpacks/"+modpackLiveData.getValue().getName()+"/modrinth.index.json");
+
+        if (!jsonFile.exists()) {
+            Log.e("ModpackViewModel", "modrinth.index.json not found.");
+            return;
+        }
+
+        try {
+            // Read existing JSON file
+            String jsonContent = new String(Files.readAllBytes(jsonFile.toPath()));
+            JSONObject jsonObject = new JSONObject(jsonContent);
+
+            // Check if "files" array exists
+            JSONArray filesArray = jsonObject.optJSONArray("files");
+            if (filesArray == null) {
+                Log.e("ModpackViewModel", "No files found in modrinth.index.json.");
+                return;
+            }
+
+            // Iterate through the files array and remove matching mod file
+            JSONArray updatedFilesArray = new JSONArray();
+            boolean removed = false;
+
+            for (int i = 0; i < filesArray.length(); i++) {
+                JSONObject fileObj = filesArray.getJSONObject(i);
+                String filePath = fileObj.getString("path").replace("mods/", "");
+
+                if (filePath.equals(modFile.getFilename())) {
+                    removed = true; // Mark as removed
+                    continue; // Skip adding this file to the updated array
+                }
+
+                updatedFilesArray.put(fileObj);
+            }
+
+            if (!removed) {
+                Log.e("ModpackViewModel", "Mod file not found in JSON.");
+                return;
+            }
+
+            // Update JSON object
+            jsonObject.put("files", updatedFilesArray);
+
+            // Write back to file
+            Files.write(jsonFile.toPath(), jsonObject.toString(4).getBytes());
+
+            // Update LiveData
+            Modpack currentModpack = modpackLiveData.getValue();
+            if (currentModpack != null) {
+                List<ModFile> updatedFiles = new ArrayList<>(currentModpack.getFiles());
+                updatedFiles.removeIf(file -> file.getFilename().equals(modFile.getFilename()));
+
+                Modpack updatedModpack = new Modpack(
+                        currentModpack.getName(),
+                        currentModpack.getMinecraftVersion(),
+                        currentModpack.getLoader(),
+                        currentModpack.getLoaderVersion(),
+                        updatedFiles
+                );
+                modpackLiveData.postValue(updatedModpack);
+            }
+
+            Log.d("ModpackViewModel", "Mod file removed and LiveData updated: " + modFile.getFilename());
+
+        } catch (IOException | JSONException e) {
+            Log.e("ModpackViewModel", "Error removing mod file: " + e.getMessage());
+        }
+    }
+
 
 }

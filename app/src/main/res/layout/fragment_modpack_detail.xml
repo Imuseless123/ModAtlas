@@ -21,11 +21,18 @@
         android:text="+ Add content"
         android:textColor="@android:color/white"
         android:layout_marginTop="20dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerModFiles"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="10dp"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="10dp">
+
 
         <TextView
             android:id="@+id/textJsonContent"
