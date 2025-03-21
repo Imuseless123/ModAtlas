@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +23,7 @@ import com.example.modatlas.models.ModVersion;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.ModrinthResponse;
 import com.example.modatlas.models.RetrofitClient;
+import com.example.modatlas.viewmodels.ModpackViewModel;
 import com.example.modatlas.views.AddContentEntryAdapter;
 
 import org.json.JSONArray;
@@ -38,6 +40,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddContentFragment extends Fragment {
+    private ModpackViewModel modpackViewModel;
     private static final String ARG_LOADER = "param1";
     private static final String ARG_VERSION = "param2";
     private String loader;
@@ -77,6 +80,7 @@ public class AddContentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_content, container, false);
+        modpackViewModel = new ViewModelProvider(requireActivity()).get(ModpackViewModel.class);
         searchInput = view.findViewById(R.id.searchInput);
         searchButton = view.findViewById(R.id.searchButton);
         recyclerView = view.findViewById(R.id.recyclerView);
@@ -179,7 +183,8 @@ public class AddContentFragment extends Fragment {
                                 Log.d("Selected ModFile", "Size: " + file.getSize());
 
                                 // Use this file (e.g., download or store its URL)
-                                String downloadUrl = file.getUrl();
+//                                String downloadUrl = file.getUrl();
+                                modpackViewModel.addModFile(file);
                                 return; // Stop searching after finding the first valid file
                             }
                         }

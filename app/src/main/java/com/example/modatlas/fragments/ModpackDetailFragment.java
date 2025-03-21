@@ -103,7 +103,7 @@ public class ModpackDetailFragment extends Fragment {
         btnAddContent.setOnClickListener(v -> {
             getParentFragmentManager()
                     .beginTransaction()
-                    .replace(android.R.id.content, AddContentFragment.newInstance(loader,version)) // Replace with the new fragment
+                    .replace(android.R.id.content, AddContentFragment.newInstance(modpackViewModel.getModpack().getValue().getLoader(),modpackViewModel.getModpack().getValue().getMinecraftVersion())) // Replace with the new fragment
                     .addToBackStack(null) // Add to back stack to allow back navigation
                     .commit();
         });

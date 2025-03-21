@@ -106,4 +106,54 @@ public class ModpackViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
     }
+    public void addModFile(ModFile modFile) {
+        File jsonFile = new File(getApplication().getFilesDir(), "modpacks/"+modpackLiveData.getValue().getName()+"/modrinth.index.json");
+
+        if (!jsonFile.exists()) {
+            Log.e("ModpackViewModel", "modrinth.index.json not found.");
+            return;
+        }
+
+        try {
+            // Read existing JSON file
+            String jsonContent = new String(Files.readAllBytes(jsonFile.toPath()));
+            JSONObject jsonObject = new JSONObject(jsonContent);
+
+            // Ensure "files" array exists
+            JSONArray filesArray = jsonObject.optJSONArray("files");
+            if (filesArray == null) {
+                filesArray = new JSONArray();
+                jsonObject.put("files", filesArray);
+            }
+
+            // Create JSON object for the new mod file
+            JSONObject modFileJson = new JSONObject();
+            modFileJson.put("path", "mods/" + modFile.getFilename());
+            modFileJson.put("fileSize", modFile.getSize());
+
+            // Add hashes
+            JSONObject hashesJson = new JSONObject();
+            hashesJson.put("sha1", modFile.getHashes().getSha1());
+            hashesJson.put("sha512", modFile.getHashes().getSha512());
+            modFileJson.put("hashes", hashesJson);
+
+            // Add downloads array
+            JSONArray downloadsArray = new JSONArray();
+            downloadsArray.put(modFile.getUrl());
+            modFileJson.put("downloads", downloadsArray);
+
+            // Append to "files" array
+            filesArray.put(modFileJson);
+            Log.v("AddMod",modFileJson.toString());
+
+            // Write back to file
+            Files.write(jsonFile.toPath(), jsonObject.toString(4).getBytes());
+
+            Log.d("ModpackViewModel", "Mod file added: " + modFile.getFilename());
+
+        } catch (IOException | JSONException e) {
+            Log.e("ModpackViewModel", "Error adding mod file: " + e.getMessage());
+        }
+    }
+
 }
