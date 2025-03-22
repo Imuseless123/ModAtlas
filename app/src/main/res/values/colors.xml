@@ -7,4 +7,13 @@
     <color name="light_blue_600">#FF039BE5</color>
     <color name="gray_400">#FFBDBDBD</color>
     <color name="gray_600">#FF757575</color>
+
+    <color name="primary">#1ad869</color>
+    <color name="primary_variant">#164830</color>
+    <color name="secondary">#03DAC6</color>
+    <color name="background">#15171b</color>
+    <color name="surface">#25282e</color>
+    <color name="on_primary">#15171b</color>
+    <color name="on_secondary">#000000</color>
+    <color name="on_surface">#ecf9fb</color>
 </resources>

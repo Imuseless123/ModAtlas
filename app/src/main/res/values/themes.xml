@@ -3,6 +3,11 @@
     <style name="Base.Theme.ModAtlas" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">false</item> <!-- This forces white icons -->
+        <item name="android:windowLightNavigationBar">false</item>
+        
     </style>
 
     <style name="Theme.ModAtlas" parent="Base.Theme.ModAtlas" />
