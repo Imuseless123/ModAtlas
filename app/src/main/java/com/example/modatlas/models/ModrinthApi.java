@@ -31,4 +31,6 @@ public interface ModrinthApi {
 
     @GET("projects")
     Call<List<Mod>> getModsByProjectIds(@Query("ids") String ids);
+    @GET("versions")
+    Call<List<ModVersion>> getModVersionsById(@Query("ids") String ids);
 }

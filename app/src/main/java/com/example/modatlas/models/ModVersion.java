@@ -8,6 +8,8 @@ public class ModVersion {
     private String version_number;
     private List<ModFile> files;
     private List<Dependency> dependencies;
+    private String project_id;
+
 
     public List<Dependency> getDependencies() {
         return dependencies;
@@ -17,5 +19,6 @@ public class ModVersion {
     public List<ModFile> getFiles() { return files; }
     public List<String> getLoaders() { return loaders; }
     public List<String> getGameVersions() { return game_versions; }
+    public String getProjectId() { return  project_id;};
 }
 

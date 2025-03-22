@@ -42,8 +42,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -58,6 +60,7 @@ public class ModpackViewModel extends AndroidViewModel {
     private final MutableLiveData<String> rawJsonLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Mod>> dependencyModsLiveData = new MutableLiveData<>();
     private final ModrinthApi modrinthApi;
+    private final List<String> modIds = new ArrayList<>();
 
     public ModpackViewModel(@NonNull Application application) {
         super(application);
@@ -66,6 +69,11 @@ public class ModpackViewModel extends AndroidViewModel {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         modrinthApi = retrofit.create(ModrinthApi.class);
+        modpackLiveData.observeForever(modpack -> {
+            if (modpack != null) {
+                getListOfMods();
+            }
+        });
     }
 
     // LiveData for observing the selected modpack
@@ -429,7 +437,7 @@ public class ModpackViewModel extends AndroidViewModel {
                     if (response.isSuccessful() && response.body() != null) {
                         for (Dependency dependency : response.body().getDependencies()) {
 
-                            if ("required".equals(dependency.getDependencyType())) {
+                            if ("required".equals(dependency.getDependencyType())&& !modIds.contains(dependency.getProjectId())) {
                                 requiredProjectIds.add(dependency.getProjectId());
                             }
                         }
@@ -447,8 +455,8 @@ public class ModpackViewModel extends AndroidViewModel {
 
     private void fetchDependencyMods(List<String> projectIds) {
         if (projectIds.isEmpty()) return;
-
         String jsonIds = new Gson().toJson(projectIds);
+
 
         modrinthApi.getModsByProjectIds(jsonIds).enqueue(new Callback<List<Mod>>() {
             @Override
@@ -464,5 +472,50 @@ public class ModpackViewModel extends AndroidViewModel {
             }
         });
     }
+    private void getListOfMods() {
+
+        Modpack modpack = modpackLiveData.getValue();
+        if (modpack == null) return;
+
+        List<ModFile> modFiles = modpack.getFiles();
+        List<String> versionIds = new ArrayList<>();
+
+        // Extract version IDs from mod file URLs
+        for (ModFile file : modFiles) {
+            String[] parts = file.getUrl().split("/");
+            if (parts.length >= 6) {
+                versionIds.add(parts[parts.length - 2]); // Extract version ID
+            }
+        }
+
+        if (versionIds.isEmpty()) return;
+        String jsonIds = new Gson().toJson(versionIds);
+        modrinthApi.getModVersionsById(jsonIds).enqueue(new Callback<List<ModVersion>>() {
+            @Override
+            public void onResponse(Call<List<ModVersion>> call, Response<List<ModVersion>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<String> projectIds = new ArrayList<>();
+                    for (ModVersion modVersion : response.body()) {
+                        projectIds.add(modVersion.getProjectId());
+                    }
+                    Log.v("Check","Project num "+projectIds.size());
+
+                    // Ensure we only proceed if we have project IDs
+                    if (!projectIds.isEmpty()) {
+                        modIds.clear();
+                        modIds.addAll(projectIds);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ModVersion>> call, Throwable t) {
+                Log.e("ModpackViewModel", "Failed to fetch mod versions", t);
+            }
+        });
+    }
+
+    // Separate function to fetch mods by project ID
+
 
 }
