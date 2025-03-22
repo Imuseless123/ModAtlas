@@ -2,7 +2,11 @@ package com.example.modatlas.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,17 +17,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.modatlas.R;
+import com.example.modatlas.models.Mod;
+import com.example.modatlas.models.ModFile;
+import com.example.modatlas.models.ModVersion;
+import com.example.modatlas.models.ModrinthApi;
+import com.example.modatlas.models.ModrinthResponse;
+import com.example.modatlas.models.RetrofitClient;
+import com.example.modatlas.viewmodels.ModpackViewModel;
+import com.example.modatlas.views.AddContentEntryAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddContentFragment extends Fragment {
+    private ModpackViewModel modpackViewModel;
     private static final String ARG_LOADER = "param1";
     private static final String ARG_VERSION = "param2";
     private String loader;
@@ -31,7 +48,11 @@ public class AddContentFragment extends Fragment {
 
     private EditText searchInput;
     private Button searchButton;
-    private TextView resultText;
+    private RecyclerView recyclerView;
+    private AddContentEntryAdapter adapter;
+    private List<Mod> modList = new ArrayList<>();
+    private boolean isLoading = false;
+    private int currentPage = 0;
 
     public AddContentFragment() {
     }
@@ -59,65 +80,127 @@ public class AddContentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_content, container, false);
+        modpackViewModel = new ViewModelProvider(requireActivity()).get(ModpackViewModel.class);
         searchInput = view.findViewById(R.id.searchInput);
         searchButton = view.findViewById(R.id.searchButton);
-        resultText = view.findViewById(R.id.resultText);
+        recyclerView = view.findViewById(R.id.recyclerView);
 
-        searchButton.setOnClickListener(v -> searchModrinth(searchInput.getText().toString()));
+        adapter = new AddContentEntryAdapter(modList,this::onModButtonClick);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+        searchButton.setOnClickListener(v -> {
+            modList.clear();
+            adapter.notifyDataSetChanged();
+            currentPage = 0;
+            searchModrinth(searchInput.getText().toString(), true);
+        });
+
+        // Implement infinite scrolling
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) { // Check if scrolling down
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                    if (!isLoading && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount) {
+                        searchModrinth(searchInput.getText().toString(), false);
+                    }
+                }
+            }
+        });
 
         return view;
     }
 
-    private void searchModrinth(String query) {
+    private void searchModrinth(String query, boolean reset) {
         if (query.isEmpty()) {
-            resultText.setText("Enter a mod name to search.");
             return;
         }
 
-        // Adjust the loader category if needed
-        String loaderCategory = loader;
-        if ("fabric-loader".equals(loader)) {
-            loaderCategory = "fabric";
-        } else if ("quilt-loader".equals(loader)) {
-            loaderCategory = "quilt";
+        if (reset) {
+            modList.clear();
+            currentPage = 0;
+            isLoading = false;
         }
 
-        String url = "https://api.modrinth.com/v2/search?query=" + query +
-                "&limit=20&offset=0&index=downloads&facets=[[" +
-                "\"categories:" + loaderCategory + "\"],[" +
-                "\"versions:" + version + "\"],[" +
-                "\"project_type:mod\"]]";
+        isLoading = true;
+        String loaderCategory = loader.equals("fabric-loader") ? "fabric" :
+                loader.equals("quilt-loader") ? "quilt" : loader;
 
-        Log.v("ModrinthSearch", "Request URL: " + url);
+        String facets = "[[\"categories:" + loaderCategory + "\"], [\"versions:" + version + "\"], [\"project_type:mod\"]]";
 
-        new Thread(() -> {
-            try {
-                OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder()
-                        .url(url)
-                        .build();
+        ModrinthApi api = RetrofitClient.getApi();
+        Call<ModrinthResponse> call = api.searchMods(query, 20, currentPage * 20, "relevance", facets);
 
-                Response response = client.newCall(request).execute();
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-                String responseData = response.body().string();
-
-                JSONObject jsonObject = new JSONObject(responseData);
-                JSONArray results = jsonObject.getJSONArray("hits");
-
-                StringBuilder resultString = new StringBuilder();
-                for (int i = 0; i < results.length(); i++) {
-                    JSONObject mod = results.getJSONObject(i);
-                    resultString.append(mod.getString("title")).append("\n");
+        call.enqueue(new Callback<ModrinthResponse>() {
+            @Override
+            public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Mod> mods = response.body().getHits();
+                    modList.addAll(mods);
+                    adapter.notifyDataSetChanged();
+                    currentPage++;
                 }
-
-                String finalResult = resultString.toString();
-                getActivity().runOnUiThread(() -> resultText.setText(finalResult.isEmpty() ? "No results found" : finalResult));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                getActivity().runOnUiThread(() -> resultText.setText("Error fetching data."));
+                isLoading = false;
             }
-        }).start();
+
+            @Override
+            public void onFailure(Call<ModrinthResponse> call, Throwable t) {
+                isLoading = false;
+            }
+        });
     }
+    private void onModButtonClick(Mod mod) {
+        // Make an API call when the button is clicked
+        Log.v("Import","Import: "+ mod.getTitle());
+                if (mod.getSlug() == null) {
+            Log.e("AddContentEntryView", "Slug is null, cannot fetch versions.");
+            return;
+        }
+
+        ModrinthApi api = RetrofitClient.getApi();
+        Call<List<ModVersion>> call = api.getModVersions(mod.getSlug());
+        Log.v("Import","call: "+ mod.getSlug());
+
+        call.enqueue(new Callback<List<ModVersion>>() {
+            @Override
+            public void onResponse(Call<List<ModVersion>> call, Response<List<ModVersion>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String normalizedLoader = loader.replace("-loader", ""); // Normalize loader names
+
+                    for (ModVersion modVersion : response.body()) {
+                        if (modVersion.getGameVersions().contains(version) && modVersion.getLoaders().contains(normalizedLoader)) {
+                            if (!modVersion.getFiles().isEmpty()) {
+                                ModFile file = modVersion.getFiles().get(0); // Take the first file
+
+                                Log.d("Selected ModFile", "Filename: " + file.getFilename());
+                                Log.d("Selected ModFile", "SHA1: " + file.getHashes().getSha1());
+                                Log.d("Selected ModFile", "URL: " + file.getUrl());
+                                Log.d("Selected ModFile", "Size: " + file.getSize());
+
+                                // Use this file (e.g., download or store its URL)
+//                                String downloadUrl = file.getUrl();
+                                modpackViewModel.addModFile(file);
+                                return; // Stop searching after finding the first valid file
+                            }
+                        }
+                    }
+                    Log.e("AddContentEntryView", "No matching file found for loader: " + loader + " and version: " + version);
+                } else {
+                    Log.e("AddContentEntryView", "Failed to fetch versions: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ModVersion>> call, Throwable t) {
+                Log.e("AddContentEntryView", "Error fetching versions: " + t.getMessage());
+            }
+        });
+    }
+
 }
+

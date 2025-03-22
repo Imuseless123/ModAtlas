@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
                 // Pass a string value
-                searchModsIntent.putExtra("id", "mods");
+                searchModsIntent.putExtra("id", "mod");
                 startActivity(searchModsIntent);
             }
         });
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
                 // Pass a string value
-                searchModsIntent.putExtra("id", "Resource Packs");
+                searchModsIntent.putExtra("id", "resourcepack");
                 startActivity(searchModsIntent);
             }
         });
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
                 // Pass a string value
-                searchModsIntent.putExtra("id", "Data Packs");
+                searchModsIntent.putExtra("id", "datapack");
                 startActivity(searchModsIntent);
             }
         });
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
                 // Pass a string value
-                searchModsIntent.putExtra("id", "Shaders");
+                searchModsIntent.putExtra("id", "shader");
                 startActivity(searchModsIntent);
             }
         });
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
                 // Pass a string value
-                searchModsIntent.putExtra("id", "Mod Packs");
+                searchModsIntent.putExtra("id", "modpack");
                 startActivity(searchModsIntent);
             }
         });
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
                 // Pass a string value
-                searchModsIntent.putExtra("id", "Plugins");
+                searchModsIntent.putExtra("id", "plugin");
                 startActivity(searchModsIntent);
             }
         });

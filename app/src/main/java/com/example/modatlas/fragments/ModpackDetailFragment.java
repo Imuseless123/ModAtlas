@@ -1,9 +1,17 @@
 package com.example.modatlas.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,19 +22,24 @@ import android.widget.Toast;
 
 import com.example.modatlas.ModpackActivity;
 import com.example.modatlas.R;
+import com.example.modatlas.viewmodels.ModpackViewModel;
+import com.example.modatlas.views.ModFileAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ModpackDetailFragment extends Fragment {
+    private ActivityResultLauncher<Intent> fileExportLauncher;
+
+    private ModpackViewModel modpackViewModel;
+    private ModFileAdapter modFileAdapter;
     private static final String ARG_MODPACK_NAME = "modpack_name";
     private String modpackName;
-    private String loader;
-    private String version;
 
     public static ModpackDetailFragment newInstance(String modpackName) {
         ModpackDetailFragment fragment = new ModpackDetailFragment();
@@ -39,64 +52,62 @@ public class ModpackDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_modpack_detail, container, false);
+        modpackViewModel = new ViewModelProvider(requireActivity()).get(ModpackViewModel.class);
         TextView textView = view.findViewById(R.id.textModpackName);
         Button btnAddContent = view.findViewById(R.id.btnAddContent);
         TextView textJsonContent = view.findViewById(R.id.textJsonContent);
         Button btnDelete = view.findViewById(R.id.btnDeleteModpack);
+        RecyclerView recyclerModFiles = view.findViewById(R.id.recyclerModFiles);
+        Button btnExportModpack = view.findViewById(R.id.btnExportModpack);
+        btnExportModpack.setOnClickListener(v -> {
+            modpackViewModel.exportModpack(modpackName, requireActivity(), fileExportLauncher);
+        });
+
+        // Set up RecyclerView
+        recyclerModFiles.setLayoutManager(new LinearLayoutManager(getContext()));
+        modFileAdapter = new ModFileAdapter(new ArrayList<>(), modFile -> modpackViewModel.removeModFile(modFile));
+        recyclerModFiles.setAdapter(modFileAdapter);
 
         if (getArguments() != null) {
             modpackName = getArguments().getString(ARG_MODPACK_NAME);
             textView.setText(modpackName);
 
-
-            // Load JSON file content
-            File jsonFile = new File(requireContext().getFilesDir(), "modpacks/" + modpackName + "/modrinth.index.json");
-            if (jsonFile.exists()) {
-                try {
-                    String jsonContent = new String(java.nio.file.Files.readAllBytes(jsonFile.toPath()));
-                    textJsonContent.setText(jsonContent);
-
-                    // Parse JSON
-                    JSONObject jsonObject = new JSONObject(jsonContent);
-                    JSONObject dependencies = jsonObject.getJSONObject("dependencies");
-
-                    // Extract "minecraft" version
-                    version = dependencies.optString("minecraft", "Unknown");
-
-                    // Find the first key that is NOT "minecraft"
-                    loader = "";
-                    Iterator<String> keys = dependencies.keys(); // Fix: Use keys() instead of keySet()
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        if (!key.equals("minecraft")) {
-                            loader = key;
-                            break;
-                        }
-                    }
-
-                } catch (IOException e) {
-                    textJsonContent.setText("Failed to load JSON file.");
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
+            modpackViewModel.loadModpack(modpackName);
+            // Observe parsed Modpack data
+            modpackViewModel.getModpack().observe(getViewLifecycleOwner(), modpack -> {
+                if (modpack != null) {
+                    textView.setText(modpack.getName());
+                    modFileAdapter.updateList(modpack.getFiles());
                 }
-            } else {
-                textJsonContent.setText("modrinth.index.json not found.");
-            }
+            });
+
+            // Observe raw JSON text
+            modpackViewModel.getRawJson().observe(getViewLifecycleOwner(), textJsonContent::setText);
+
+
         }
 
         btnAddContent.setOnClickListener(v -> {
             getParentFragmentManager()
                     .beginTransaction()
-                    .replace(android.R.id.content, AddContentFragment.newInstance(loader,version)) // Replace with the new fragment
+                    .replace(android.R.id.content, AddContentFragment.newInstance(modpackViewModel.getModpack().getValue().getLoader(),modpackViewModel.getModpack().getValue().getMinecraftVersion())) // Replace with the new fragment
                     .addToBackStack(null) // Add to back stack to allow back navigation
                     .commit();
         });
         // Delete modpack button click
         btnDelete.setOnClickListener(v -> deleteModpack());
 
+        fileExportLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                Uri uri = result.getData().getData();
+                if (uri != null) {
+                    modpackViewModel.handleExportResult(uri, requireContext(), new File(requireContext().getFilesDir(), "modpacks/" + modpackName + ".mrpack"));
+                }
+            }
+        });
         return view;
     }
+
 
     private void deleteModpack() {
         File modpackDir = new File(requireContext().getFilesDir(), "modpacks/" + modpackName);

@@ -9,16 +9,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.modatlas.fragments.CreateModpackFragment;
-import com.example.modatlas.fragments.ModpackAdapter;
+import com.example.modatlas.viewmodels.ModpackViewModel;
+import com.example.modatlas.views.ModpackAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class ModpackActivity extends AppCompatActivity {
+    private ModpackViewModel modpackViewModel;
     private ArrayList<String> modpacks = new ArrayList<>();
     private ModpackAdapter adapter;
 
@@ -32,6 +35,9 @@ public class ModpackActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        modpackViewModel = new ViewModelProvider(this).get(ModpackViewModel.class);
+
         Button btnCreateModpack = findViewById(R.id.btnCreateModpack);
         RecyclerView recyclerView = findViewById(R.id.recyclerViewModpacks);
 
