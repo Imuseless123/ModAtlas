@@ -59,14 +59,17 @@ public class CreateModpackFragment extends Fragment {
         spinnerLoader = view.findViewById(R.id.spinnerLoader);
         btnSave = view.findViewById(R.id.btnSave);
 
+        ArrayAdapter<String> loaderAdapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item, loaders);
+        loaderAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinnerLoader.setAdapter(loaderAdapter);
+
+        fetchMinecraftVersions();
         // Set up Spinners
-        ArrayAdapter<String> versionAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, minecraftVersions);
-        versionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> versionAdapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item, minecraftVersions);
+        versionAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinnerMinecraftVersion.setAdapter(versionAdapter);
 
-        ArrayAdapter<String> loaderAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, loaders);
-        loaderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLoader.setAdapter(loaderAdapter);
+
 
 
         btnSave.setOnClickListener(v -> {
@@ -80,7 +83,6 @@ public class CreateModpackFragment extends Fragment {
             }
             getParentFragmentManager().popBackStack();
         });
-        fetchMinecraftVersions();
 
         return view;
     }
@@ -161,9 +163,9 @@ public class CreateModpackFragment extends Fragment {
 
                         getActivity().runOnUiThread(() -> {
                             ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                                    getActivity(), android.R.layout.simple_spinner_item, minecraftVersions
+                                    getActivity(), R.layout.spinner_item, minecraftVersions
                             );
-                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
                             spinnerMinecraftVersion.setAdapter(adapter);
                         });
 
