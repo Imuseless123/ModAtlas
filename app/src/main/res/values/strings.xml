@@ -7,4 +7,68 @@
     <string name="modpacks_folder">modpacks</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="projectType">
+        <item>resourcePack</item>
+        <item>mod</item>
+        <item>shader</item>
+        <item>modpack</item>
+        <item>datapack</item>
+    </string-array>
+
+    <string-array name="resourcepack">
+        <item>resolutions</item>
+        <item>features</item>
+        <item>categories</item>
+    </string-array>
+
+    <string-array name="mod">
+        <item>versions</item>
+        <item>categories</item>
+        <item>loader</item>
+        <item>environment</item>
+        <item>licence</item>
+    </string-array>
+    
+    <string-array name="mod_category">
+        <item>adventure</item>
+        <item>cursed</item>
+        <item>decoration</item>
+        <item>economy</item>
+        <item>equipment</item>
+        <item>food</item>
+        <item>game-mechanics</item>
+        <item>library</item>
+        <item>magic</item>
+        <item>management</item>
+        <item>minigame</item>
+        <item>mobs</item>
+        <item>optimization</item>
+        <item>social</item>
+        <item>storage</item>
+        <item>technology</item>
+        <item>transportation</item>
+        <item>utility</item>
+        <item>worldgen</item>
+    </string-array>
+
+    <string-array name="mod_loader">
+        <item>fabric</item>
+        <item>forge</item>
+        <item>neoforge</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
+    <string-array name="modpack">
+        <item>categories</item>
+    </string-array>
+
+    <string-array name="shader">
+        <item>features</item>
+        <item>categories</item>
+        <item>performanceImpact</item>
+    </string-array>
 </resources>
