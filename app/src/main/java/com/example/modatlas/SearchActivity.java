@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -20,6 +21,7 @@ import com.example.modatlas.models.RetrofitClient;
 import com.example.modatlas.models.urlString;
 import com.example.modatlas.views.ModItemAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,10 +31,14 @@ import retrofit2.Response;
 public class SearchActivity extends AppCompatActivity {
 
     private ModrinthApi api;
-    private String query="";
-    private int currentPage=0;
+    private String query;
+    private int currentPage;
     private List<Mod> mod;
     private RecyclerView modItems;
+    private String searchId;
+    private boolean isLoading;
+    private boolean isLastPage;
+    private final int pageSize = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,23 +50,27 @@ public class SearchActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Log.e("test","in SearchActivity");
-        // Get the intent
-        Intent intent = getIntent();
-        String modName = urlString.getProjectType( intent.getStringExtra("id"));
-        Log.e("test","mod name: "+modName);
 
+        this.init();
+
+    }
+
+    private void init(){
+        this.query = "";
+        this.currentPage = 0;
+        this.isLoading = false;
+        this.isLastPage = false;
+        this.mod = new ArrayList<>();
+        Intent intent = getIntent();
+        this.searchId = urlString.getProjectType( intent.getStringExtra("id"));
         this.api = RetrofitClient.getApi();
-        Log.e("test","load api");
         this.modItems = findViewById(R.id.mod_items);
         this.modItems.setLayoutManager(new LinearLayoutManager(this));
-        this.api.searchFacetMod(query, 20, currentPage * 20,modName).enqueue(new Callback<ModrinthResponse>() {
+        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,this.searchId).enqueue(new Callback<ModrinthResponse>() {
             @Override
             public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
                 if (response.body() != null) {
                     mod = response.body().getHits();
-                    Log.e("test", mod.get(0).getTitle() + "\n" + mod.get(0).getAuthor() + "\n" + mod.get(0).getDownloads());
-
                     // Now that we have the data, update the RecyclerView
                     modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod));
                 } else {
@@ -74,5 +84,65 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
+        this.initListener();
     }
+
+    private void initListener(){
+        modItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (layoutManager != null && !isLoading && !isLastPage) {
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                            && firstVisibleItemPosition >= 0
+                            && totalItemCount >= pageSize) {
+                        loadMoreMods();
+                    }
+                }
+            }
+        });
+
+    }
+
+    private void loadMoreMods() {
+        isLoading = true;
+        currentPage++;
+
+        api.searchFacetMod(query, pageSize, currentPage * pageSize, this.searchId)
+                .enqueue(new Callback<ModrinthResponse>() {
+                    @Override
+                    public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
+                        if (response.body() != null && response.body().getHits() != null) {
+                            List<Mod> newMods = response.body().getHits();
+                            if (!newMods.isEmpty()) {
+                                mod.addAll(newMods);
+                                if (modItems.getAdapter() == null) {
+                                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod));
+                                } else {
+                                    modItems.getAdapter().notifyDataSetChanged();
+                                }
+                            } else {
+                                isLastPage = true;
+                            }
+                        } else {
+                            isLastPage = true;
+                        }
+                        isLoading = false;
+                    }
+
+                    @Override
+                    public void onFailure(Call<ModrinthResponse> call, Throwable t) {
+                        Log.e("test", "API call failed: " + t.getMessage());
+                        isLoading = false;
+                    }
+                });
+    }
+
+
 }
