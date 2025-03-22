@@ -17,6 +17,13 @@ public interface ModrinthApi {
             @Query("index") String index,
             @Query("facets") String facets
     );
+    @GET("search")
+    Call<ModrinthResponse> searchFacetMod(
+            @Query("query") String query,
+            @Query("limit") int limit,
+            @Query("offset") int offset,
+            @Query("facets") String facets  // Pass facets as a query parameter
+    );
     @GET("project/{slug}/version")
     Call<List<ModVersion>> getModVersions(@Path("slug") String slug);
     @GET("version/{id}")
