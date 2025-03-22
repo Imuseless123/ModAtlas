@@ -29,6 +29,20 @@
         android:text="+ Add content"
         android:textColor="@android:color/white"
         android:layout_marginTop="20dp"/>
+    <Button
+        android:id="@+id/btnScanDependency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scan for dependency"
+        android:backgroundTint="@android:color/holo_green_dark"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="20dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="10dp"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerModFiles"
         android:layout_width="match_parent"

@@ -7,6 +7,11 @@ public class ModVersion {
     private List<String> loaders;
     private String version_number;
     private List<ModFile> files;
+    private List<Dependency> dependencies;
+
+    public List<Dependency> getDependencies() {
+        return dependencies;
+    }
 
     public String getVersionNumber() { return version_number; }
     public List<ModFile> getFiles() { return files; }
