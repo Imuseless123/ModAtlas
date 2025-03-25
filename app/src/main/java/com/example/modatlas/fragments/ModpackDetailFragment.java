@@ -79,8 +79,11 @@ public class ModpackDetailFragment extends Fragment {
         });
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        adapter = new AddContentEntryAdapter(modList, mod -> {
+//
+//        String loader = modpackViewModel.getModpack().getValue().getLoader();
+//        loader = loader.equals("fabric-loader") ? "fabric" :
+//                loader.equals("quilt-loader") ? "quilt" : loader;
+        adapter = new AddContentEntryAdapter(modList,null, mod -> {
             // Handle mod button click event
             onModButtonClick(mod);
         });

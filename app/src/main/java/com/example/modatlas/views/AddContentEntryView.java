@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,6 +18,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.modatlas.R;
@@ -34,7 +37,7 @@ import retrofit2.Response;
 
 public class AddContentEntryView extends LinearLayout {
     private ImageView icon;
-    private TextView title, author, downloads;
+    private TextView title, author, downloads, categoryText;
     private Button actionButton;
     private OnActionButtonClickListener buttonClickListener;
     private String slug; // Store slug for API request
@@ -54,12 +57,20 @@ public class AddContentEntryView extends LinearLayout {
         setPadding(16, 16, 16, 16);
         setGravity(Gravity.CENTER_VERTICAL);
 
+        // Set background with rounded corners
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(ContextCompat.getColor(context, R.color.surface));
+        background.setCornerRadius(dpToPx(16));
+        setBackground(background);
+
         // Icon
         icon = new ImageView(context);
         int iconSize = dpToPx(50);
         LayoutParams iconParams = new LayoutParams(iconSize, iconSize);
         icon.setLayoutParams(iconParams);
         icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        icon.setClipToOutline(true); // Enable rounded corners
+        icon.setBackgroundResource(R.drawable.rounded_icon); // Define shape drawable
         addView(icon);
 
         // Middle section: Title & Author
@@ -77,8 +88,14 @@ public class AddContentEntryView extends LinearLayout {
         author.setTextSize(14);
         author.setTextColor(Color.GRAY);
 
+        categoryText = new TextView(context);
+        categoryText.setTextSize(14);
+        categoryText.setTypeface(Typeface.DEFAULT_BOLD);
+        categoryText.setPadding(0, dpToPx(4), 0, 0);
+
         textContainer.addView(title);
         textContainer.addView(author);
+        textContainer.addView(categoryText);
         addView(textContainer);
 
         // Right section: Downloads & Button
@@ -104,9 +121,23 @@ public class AddContentEntryView extends LinearLayout {
         addView(rightContainer);
     }
 
-    public void bind(Mod mod) {
+    public void bind(Mod mod, String loader) {
         title.setText(mod.getTitle());
-        author.setText("by " + mod.getAuthor());
+        // Hide author if empty
+        if (mod.getAuthor() == null || mod.getAuthor().isEmpty()) {
+            author.setVisibility(GONE);
+        } else {
+            author.setText("by " + mod.getAuthor());
+            author.setVisibility(VISIBLE);
+        }
+        // Set category text
+        if (mod.getCategories().contains(loader)) {
+            categoryText.setText("Native");
+            categoryText.setTextColor(Color.GREEN);
+        } else {
+            categoryText.setText("Compatible");
+            categoryText.setTextColor(Color.BLUE);
+        }
         downloads.setText(mod.getDownloads() + " downloads");
         slug = mod.getSlug(); // Store slug for API request
 
@@ -119,36 +150,4 @@ public class AddContentEntryView extends LinearLayout {
     private int dpToPx(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
-//    private void fetchModVersions() {
-//        if (slug == null) {
-//            Log.e("AddContentEntryView", "Slug is null, cannot fetch versions.");
-//            return;
-//        }
-//
-//        ModrinthApi api = RetrofitClient.getApi();
-//        Call<List<ModVersion>> call = api.getModVersions(slug);
-//
-//        call.enqueue(new Callback<List<ModVersion>>() {
-//            @Override
-//            public void onResponse(Call<List<ModVersion>> call, Response<List<ModVersion>> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    for (ModVersion modVersion : response.body()) {
-//                        for (ModFile file : modVersion.getFiles()) {
-//                            Log.d("ModFile", "Filename: " + file.getFilename());
-//                            Log.d("ModFile", "SHA1: " + file.getHashes().getSha1());
-//                            Log.d("ModFile", "URL: " + file.getUrl());
-//                            Log.d("ModFile", "Size: " + file.getSize());
-//                        }
-//                    }
-//                } else {
-//                    Log.e("AddContentEntryView", "Failed to fetch versions: " + response.message());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<ModVersion>> call, Throwable t) {
-//                Log.e("AddContentEntryView", "Error fetching versions: " + t.getMessage());
-//            }
-//        });
-//    }
 }

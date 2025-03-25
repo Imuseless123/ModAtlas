@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -32,6 +34,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -71,6 +74,8 @@ public class AddContentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             loader = getArguments().getString(ARG_LOADER);
+            loader = loader.equals("fabric-loader") ? "fabric" :
+                    loader.equals("quilt-loader") ? "quilt" : loader;
             version = getArguments().getString(ARG_VERSION);
             Log.v("AddContent", "Loader: " + loader + ", Version: " + version);
         }
@@ -85,7 +90,7 @@ public class AddContentFragment extends Fragment {
         searchButton = view.findViewById(R.id.searchButton);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        adapter = new AddContentEntryAdapter(modList,this::onModButtonClick);
+        adapter = new AddContentEntryAdapter(modList,loader,this::onModButtonClick);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
@@ -95,7 +100,15 @@ public class AddContentFragment extends Fragment {
             currentPage = 0;
             searchModrinth(searchInput.getText().toString(), true);
         });
-
+        // Listen for Enter key on EditText
+        searchInput.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                performSearch();
+                return true;
+            }
+            return false;
+        });
         // Implement infinite scrolling
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -115,7 +128,13 @@ public class AddContentFragment extends Fragment {
 
         return view;
     }
-
+    // Helper method to perform search
+    private void performSearch() {
+        modList.clear();
+        adapter.notifyDataSetChanged();
+        currentPage = 0;
+        searchModrinth(searchInput.getText().toString(), true);
+    }
     private void searchModrinth(String query, boolean reset) {
         if (query.isEmpty()) {
             return;
@@ -128,10 +147,11 @@ public class AddContentFragment extends Fragment {
         }
 
         isLoading = true;
-        String loaderCategory = loader.equals("fabric-loader") ? "fabric" :
-                loader.equals("quilt-loader") ? "quilt" : loader;
-
-        String facets = "[[\"categories:" + loaderCategory + "\"], [\"versions:" + version + "\"], [\"project_type:mod\"]]";
+        String forkLoader = loader;
+        if(Objects.equals(loader, "quilt")){forkLoader = "fabric";}
+        if(Objects.equals(loader, "neoforge")){forkLoader = "forge";}
+        Log.v("Loader", forkLoader + "fork of"+ forkLoader);
+        String facets = "[[\"categories:" + forkLoader + "\"], [\"versions:" + version + "\"], [\"project_type:mod\"]]";
 
         ModrinthApi api = RetrofitClient.getApi();
         Call<ModrinthResponse> call = api.searchMods(query, 20, currentPage * 20, "relevance", facets);
