@@ -77,9 +77,12 @@ public class OrbitMenuView extends View {
             buttonBounds[i] = new RectF(x - size / 2, y - size / 2, x + size / 2, y + size / 2);
 
             // Check if this item is the bottom-most one (angle closest to 270°)
-            if (Math.abs(angle - Math.toRadians(90)) < Math.toRadians(10)) { // Allow small margin
-                bottomItemIndex = i + 1; // Store index (1-based)
+            int normalizedAngle = Math.floorMod((int) (Math.toDegrees(angle) + 360), 360);
+            if (Math.abs(normalizedAngle - 90) < 10) {
+                bottomItemIndex = i + 1;
             }
+
+
         }
 
         // Draw the index of the bottom-most item in the center
@@ -88,7 +91,7 @@ public class OrbitMenuView extends View {
             textPaint.setColor(Color.BLACK);
             textPaint.setTextSize(80);
             textPaint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("Item " + bottomItemIndex, centerX, centerY, textPaint);
+            canvas.drawText(searchActivityList[bottomItemIndex-1], centerX, centerY, textPaint);
         }
     }
 
