@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ModpackActivity"
-    android:orientation="vertical">
-    <Button
-        android:id="@+id/btnCreateModpack"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Create Modpack" />
-
+    android:orientation="vertical"
+    android:background="@color/background">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewModpacks"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:clipToPadding="false" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCreateModpack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Modpack"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/background"
+        app:cornerRadius="16dp"
+        android:layout_margin="16dp"/>
 </LinearLayout>

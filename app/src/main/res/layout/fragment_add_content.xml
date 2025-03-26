@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.AddContentFragment"
-    android:background="@color/design_default_color_background"
+    android:background="@color/background"
     android:orientation="vertical"
     android:paddingVertical="32dp">
 
@@ -18,12 +19,17 @@
             android:layout_weight="0.8"
             android:layout_height="wrap_content"
             android:hint="Enter Mod Name"
-            android:inputType="text"/>
-        <Button
+            android:inputType="text"
+            android:textColor="@color/on_surface"/>
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/searchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search"/>
+            android:text="Search"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/primary"
+            android:textColor="@color/background"
+            />
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

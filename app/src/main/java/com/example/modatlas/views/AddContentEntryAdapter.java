@@ -15,13 +15,15 @@ import java.util.List;
 public class AddContentEntryAdapter extends RecyclerView.Adapter<AddContentEntryAdapter.AddContentEntryViewHolder> {
     private List<Mod> modList;
     private OnModButtonClickListener listener;
+    private String loader;
 
     public interface OnModButtonClickListener {
         void onModButtonClick(Mod mod);
     }
-    public AddContentEntryAdapter(List<Mod> modList, OnModButtonClickListener listener) {
+    public AddContentEntryAdapter(List<Mod> modList,String loader, OnModButtonClickListener listener ) {
         this.modList = modList;
         this.listener = listener;
+        this.loader = loader;
     }
 
     @NonNull
@@ -32,7 +34,7 @@ public class AddContentEntryAdapter extends RecyclerView.Adapter<AddContentEntry
 
     @Override
     public void onBindViewHolder(@NonNull AddContentEntryViewHolder holder, int position) {
-        holder.bind(modList.get(position),listener);
+        holder.bind(modList.get(position),loader,listener);
     }
 
     @Override
@@ -49,8 +51,8 @@ public class AddContentEntryAdapter extends RecyclerView.Adapter<AddContentEntry
             addContentEntryView = (AddContentEntryView) itemView;
         }
 
-        public void bind(Mod mod, OnModButtonClickListener listener) {
-            addContentEntryView.bind(mod);
+        public void bind(Mod mod, String loader, OnModButtonClickListener listener) {
+            addContentEntryView.bind(mod, loader);
             addContentEntryView.setOnActionButtonClickListener(slug -> listener.onModButtonClick(mod));
         }
     }
