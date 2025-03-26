@@ -3,6 +3,7 @@ package com.example.modatlas;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -11,9 +12,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.modatlas.fragments.DataPackFilterFragment;
+import com.example.modatlas.fragments.ModFilterFragment;
+import com.example.modatlas.fragments.ModPackFilterFragment;
+import com.example.modatlas.fragments.PluginFilterFragment;
+import com.example.modatlas.fragments.ResourcePackFilterFragment;
+import com.example.modatlas.fragments.ShaderFilterFragment;
 import com.example.modatlas.models.Mod;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.ModrinthResponse;
@@ -35,10 +45,13 @@ public class SearchActivity extends AppCompatActivity {
     private int currentPage;
     private List<Mod> mod;
     private RecyclerView modItems;
+    private FragmentManager fragmentManager;
+    private TextView openFilter;
     private String searchId;
     private boolean isLoading;
     private boolean isLastPage;
     private final int pageSize = 20;
+    private boolean isFilterOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +73,11 @@ public class SearchActivity extends AppCompatActivity {
         this.currentPage = 0;
         this.isLoading = false;
         this.isLastPage = false;
+        this.isFilterOpen = false;
         this.mod = new ArrayList<>();
         Intent intent = getIntent();
+        this.fragmentManager = getSupportFragmentManager();
+        this.openFilter = findViewById(R.id.openFilter);
         this.searchId = urlString.getProjectType( intent.getStringExtra("id"));
         this.api = RetrofitClient.getApi();
         this.modItems = findViewById(R.id.mod_items);
@@ -108,6 +124,21 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
+        openFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isFilterOpen){
+                    replaceFilterFragment();
+                    openFilter.setText("close filter");
+                    isFilterOpen = true;
+                } else {
+                    popFilterFragment();
+                    openFilter.setText("open filter");
+                    isFilterOpen = false;
+                }
+
+            }
+        });
     }
 
     private void loadMoreMods() {
@@ -144,5 +175,34 @@ public class SearchActivity extends AppCompatActivity {
                 });
     }
 
+    private void replaceFilterFragment(){
+        Fragment f = new ModFilterFragment();
+        switch (this.searchId){
+            case urlString.allDataPack:
+                f = new DataPackFilterFragment();
+                break;
+            case urlString.allModPack:
+                f = new ModPackFilterFragment();
+                break;
+            case urlString.allPlugin:
+                f = new PluginFilterFragment();
+                break;
+            case urlString.allShader:
+                f = new ShaderFilterFragment();
+                break;
+            case urlString.allResourcePack:
+                f = new ResourcePackFilterFragment();
+                break;
+            default:
+                break;
+        }
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fillter,f);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 
+    private void popFilterFragment(){
+        fragmentManager.popBackStack();
+    }
 }
