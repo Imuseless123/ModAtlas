@@ -21,6 +21,7 @@ import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.RetrofitClient;
 import com.example.modatlas.viewmodels.ModpackViewModel;
 import com.example.modatlas.views.AddContentEntryAdapter;
+import com.example.modatlas.views.LoadState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,8 @@ public class DependencyFragment extends Fragment {
                                 // Use this file (e.g., download or store its URL)
 //                                String downloadUrl = file.getUrl();
                                 modpackViewModel.addModFile(file);
+                                mod.setImportState(LoadState.DONE);
+                                adapter.notifyItemChanged(modList.indexOf(mod));
                                 return; // Stop searching after finding the first valid file
                             }
                         }
@@ -110,12 +113,16 @@ public class DependencyFragment extends Fragment {
                     Log.e("AddContentEntryView", "No matching file found for loader: " + loader + " and version: " + version);
                 } else {
                     Log.e("AddContentEntryView", "Failed to fetch versions: " + response.message());
+                    mod.setImportState(LoadState.READY);
+                    adapter.notifyItemChanged(modList.indexOf(mod));
                 }
             }
 
             @Override
             public void onFailure(Call<List<ModVersion>> call, Throwable t) {
                 Log.e("AddContentEntryView", "Error fetching versions: " + t.getMessage());
+                mod.setImportState(LoadState.READY);
+                adapter.notifyItemChanged(modList.indexOf(mod));
             }
         });
     }

@@ -1,49 +1,28 @@
 package com.example.modatlas.views;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.text.TextPaint;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.modatlas.R;
 import com.example.modatlas.models.Mod;
-import com.example.modatlas.models.ModFile;
-import com.example.modatlas.models.ModVersion;
-import com.example.modatlas.models.ModrinthApi;
-import com.example.modatlas.models.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
 
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 public class AddContentEntryView extends RelativeLayout {
     private ImageView icon;
     private TextView title, author, downloads, categoryText;
     private MaterialButton actionButton;
     private OnActionButtonClickListener buttonClickListener;
     private String slug;
+    private LoadState importState = LoadState.READY;
+
 
     public interface OnActionButtonClickListener {
         void onActionButtonClick(String slug);
@@ -70,6 +49,7 @@ public class AddContentEntryView extends RelativeLayout {
 
         actionButton.setOnClickListener(v -> {
             if (buttonClickListener != null) {
+                setImportState(LoadState.LOADING);
                 buttonClickListener.onActionButtonClick(slug);
             }
         });
@@ -97,6 +77,7 @@ public class AddContentEntryView extends RelativeLayout {
         slug = mod.getSlug();
 
         Glide.with(getContext()).load(mod.getIconUrl()).into(icon);
+        setImportState(mod.getImportState());
     }
 
     private String formatDownloads(int downloads) {
@@ -108,4 +89,25 @@ public class AddContentEntryView extends RelativeLayout {
             return downloads + " downloads";
         }
     }
+    public void setImportState(LoadState state) {
+        this.importState = state;
+
+        switch (state) {
+            case READY:
+                actionButton.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.import_icon));
+                actionButton.setEnabled(true);
+                break;
+
+            case LOADING:
+                actionButton.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.dots_horizontal));
+                actionButton.setEnabled(false); // Disable while importing
+                break;
+
+            case DONE:
+                actionButton.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.check));
+                actionButton.setEnabled(false); // Disable after import completes
+                break;
+        }
+    }
+
 }

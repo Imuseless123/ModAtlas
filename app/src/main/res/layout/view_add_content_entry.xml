@@ -78,13 +78,11 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/actionButton"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Import"
                 app:cornerRadius="16dp"
                 app:backgroundTint="@color/primary"
                 android:textColor="@color/surface"
-                app:icon="@drawable/sharp_assignment_returned_24"
                 app:iconTint="@color/background"/>
         </LinearLayout>
     </LinearLayout>
