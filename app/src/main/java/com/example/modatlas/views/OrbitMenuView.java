@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -20,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.core.view.GestureDetectorCompat;
 
 import com.example.modatlas.MainActivity;
+import com.example.modatlas.R;
 import com.example.modatlas.SearchActivity;
 
 import java.util.List;
@@ -88,9 +90,10 @@ public class OrbitMenuView extends View {
         // Draw the index of the bottom-most item in the center
         if (bottomItemIndex != -1) {
             Paint textPaint = new Paint();
-            textPaint.setColor(Color.BLACK);
+            textPaint.setColor(getResources().getColor(R. color. gray_400));
             textPaint.setTextSize(80);
             textPaint.setTextAlign(Paint.Align.CENTER);
+            textPaint.setTypeface((Typeface.create("sans-serif-black", Typeface.NORMAL))); // Rounded and modern
             canvas.drawText(searchActivityList[bottomItemIndex-1], centerX, centerY, textPaint);
         }
     }

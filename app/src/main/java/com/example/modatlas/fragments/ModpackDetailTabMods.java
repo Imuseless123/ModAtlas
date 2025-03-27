@@ -35,10 +35,11 @@ import retrofit2.Response;
 
 
 public class ModpackDetailTabMods extends Fragment {
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerViewDependency;
     private RecyclerView recyclerModFiles;
     private ModFileAdapter modFileAdapter;
-    private AddContentEntryAdapter adapter;
+    private AddContentEntryAdapter addContentEntryAdapter;
+    private Button btnScanDependency;
     private List<Mod> modList = new ArrayList<>();
     private ModpackViewModel modpackViewModel;
 
@@ -47,19 +48,33 @@ public class ModpackDetailTabMods extends Fragment {
         View view = inflater.inflate(R.layout.fragment_modpack_detail_tab_mods, container, false);
 
         modpackViewModel = new ViewModelProvider(requireActivity()).get(ModpackViewModel.class);
+        btnScanDependency = view.findViewById(R.id.btnScanDependency);
+        btnScanDependency.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .add(R.id.fragmentContainer, new DependencyFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
 
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new AddContentEntryAdapter(modList, null, this::onModButtonClick);
-        recyclerView.setAdapter(adapter);
+
+//        recyclerViewDependency = view.findViewById(R.id.recyclerViewDependency);
+//        recyclerViewDependency.setLayoutManager(new LinearLayoutManager(getContext()));
+//        addContentEntryAdapter = new AddContentEntryAdapter(modList, null, this::onModButtonClick);
+//        recyclerViewDependency.setAdapter(addContentEntryAdapter);
+//        modpackViewModel.getDependencyModsLiveData().observe(getViewLifecycleOwner(), mods -> {
+//            modList.clear();
+//            modList.addAll(mods);
+//            addContentEntryAdapter.notifyDataSetChanged();
+//        });
 
         recyclerModFiles = view.findViewById(R.id.recyclerModFiles);
         recyclerModFiles.setLayoutManager(new LinearLayoutManager(getContext()));
         modFileAdapter = new ModFileAdapter(new ArrayList<>(), modFile -> modpackViewModel.removeModFile(modFile));
         recyclerModFiles.setAdapter(modFileAdapter);
 
-        Button btnScanDependency = view.findViewById(R.id.btnScanDependency);
-        btnScanDependency.setOnClickListener(v -> modpackViewModel.fetchRequiredDependencies());
+
 
         Button btnAddContent = view.findViewById(R.id.btnAddContent);
         btnAddContent.setOnClickListener(v -> {
@@ -73,15 +88,11 @@ public class ModpackDetailTabMods extends Fragment {
                     .commit();
         });
 
+
+
+
         Button btnDelete = view.findViewById(R.id.btnDeleteModpack);
         btnDelete.setOnClickListener(v -> deleteModpack());
-
-        modpackViewModel.getDependencyModsLiveData().observe(getViewLifecycleOwner(), mods -> {
-            modList.clear();
-            modList.addAll(mods);
-            adapter.notifyDataSetChanged();
-        });
-
         modpackViewModel.getModpack().observe(getViewLifecycleOwner(), modpack -> {
             if (modpack != null) {
                 modFileAdapter.updateList(modpack.getFiles());
@@ -108,53 +119,5 @@ public class ModpackDetailTabMods extends Fragment {
         }
     }
 
-    private void onModButtonClick(Mod mod) {
-        String loader = modpackViewModel.getModpack().getValue().getLoader();
-        String version = modpackViewModel.getModpack().getValue().getMinecraftVersion();
-        // Make an API call when the button is clicked
-        Log.v("Import","Import: "+ mod.getTitle());
-        if (mod.getSlug() == null) {
-            Log.e("AddContentEntryView", "Slug is null, cannot fetch versions.");
-            return;
-        }
 
-        ModrinthApi api = RetrofitClient.getApi();
-        Call<List<ModVersion>> call = api.getModVersions(mod.getSlug());
-        Log.v("Import","call: "+ mod.getSlug());
-
-        call.enqueue(new Callback<List<ModVersion>>() {
-            @Override
-            public void onResponse(Call<List<ModVersion>> call, Response<List<ModVersion>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    String normalizedLoader = loader.replace("-loader", ""); // Normalize loader names
-
-                    for (ModVersion modVersion : response.body()) {
-                        if (modVersion.getGameVersions().contains(version) && modVersion.getLoaders().contains(normalizedLoader)) {
-                            if (!modVersion.getFiles().isEmpty()) {
-                                ModFile file = modVersion.getFiles().get(0); // Take the first file
-
-                                Log.d("Selected ModFile", "Filename: " + file.getFilename());
-                                Log.d("Selected ModFile", "SHA1: " + file.getHashes().getSha1());
-                                Log.d("Selected ModFile", "URL: " + file.getUrl());
-                                Log.d("Selected ModFile", "Size: " + file.getSize());
-
-                                // Use this file (e.g., download or store its URL)
-//                                String downloadUrl = file.getUrl();
-                                modpackViewModel.addModFile(file);
-                                return; // Stop searching after finding the first valid file
-                            }
-                        }
-                    }
-                    Log.e("AddContentEntryView", "No matching file found for loader: " + loader + " and version: " + version);
-                } else {
-                    Log.e("AddContentEntryView", "Failed to fetch versions: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ModVersion>> call, Throwable t) {
-                Log.e("AddContentEntryView", "Error fetching versions: " + t.getMessage());
-            }
-        });
-    }
 }

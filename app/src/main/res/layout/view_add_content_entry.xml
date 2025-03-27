@@ -41,7 +41,9 @@
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textColor="@color/on_surface"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/author"
@@ -81,7 +83,9 @@
                 android:text="Import"
                 app:cornerRadius="16dp"
                 app:backgroundTint="@color/primary"
-                android:textColor="@color/surface"/>
+                android:textColor="@color/surface"
+                app:icon="@drawable/sharp_assignment_returned_24"
+                app:iconTint="@color/background"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
