@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +32,9 @@ import com.example.modatlas.models.RetrofitClient;
 import com.example.modatlas.viewmodels.ModpackViewModel;
 import com.example.modatlas.views.AddContentEntryAdapter;
 import com.example.modatlas.views.ModFileAdapter;
+import com.example.modatlas.views.ViewPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,9 +52,11 @@ import retrofit2.Response;
 public class ModpackDetailFragment extends Fragment {
     private ActivityResultLauncher<Intent> fileExportLauncher;
     private ModpackViewModel modpackViewModel;
-    private ModFileAdapter modFileAdapter;
+//    private ModFileAdapter modFileAdapter;
     private static final String ARG_MODPACK_NAME = "modpack_name";
     private String modpackName;
+    private ViewPager2 viewPager;
+    private TabLayout tabLayout;
     private RecyclerView recyclerView;
     private AddContentEntryAdapter adapter;
     private List<Mod> modList = new ArrayList<>();
@@ -67,42 +73,46 @@ public class ModpackDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_modpack_detail, container, false);
         modpackViewModel = new ViewModelProvider(requireActivity()).get(ModpackViewModel.class);
-        Button btnScanDependency = view.findViewById(R.id.btnScanDependency);
+        tabLayout = view.findViewById(R.id.tabLayout);
+        viewPager = view.findViewById(R.id.viewPager);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(requireActivity());
+        viewPager.setAdapter(viewPagerAdapter);
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(position == 0 ? "Mods" : "Data")
+        ).attach();
+
+//        Button btnScanDependency = view.findViewById(R.id.btnScanDependency);
         TextView textView = view.findViewById(R.id.textModpackName);
-        Button btnAddContent = view.findViewById(R.id.btnAddContent);
-        TextView textJsonContent = view.findViewById(R.id.textJsonContent);
-        Button btnDelete = view.findViewById(R.id.btnDeleteModpack);
-        RecyclerView recyclerModFiles = view.findViewById(R.id.recyclerModFiles);
-        Button btnExportModpack = view.findViewById(R.id.btnExportModpack);
-        btnExportModpack.setOnClickListener(v -> {
-            modpackViewModel.exportModpack(modpackName, requireActivity(), fileExportLauncher);
-        });
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//        Button btnAddContent = view.findViewById(R.id.btnAddContent);
+//        TextView textJsonContent = view.findViewById(R.id.textJsonContent);
+//        Button btnDelete = view.findViewById(R.id.btnDeleteModpack);
+//        RecyclerView recyclerModFiles = view.findViewById(R.id.recyclerModFiles);
+//        Button btnExportModpack = view.findViewById(R.id.btnExportModpack);
+//        btnExportModpack.setOnClickListener(v -> {
+//            modpackViewModel.exportModpack(modpackName, requireActivity(), fileExportLauncher);
+//        });
+//        recyclerView = view.findViewById(R.id.recyclerView);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//        adapter = new AddContentEntryAdapter(modList,null, mod -> {
+//            // Handle mod button click event
+//            onModButtonClick(mod);
+//        });
+//        recyclerView.setAdapter(adapter);
 //
-//        String loader = modpackViewModel.getModpack().getValue().getLoader();
-//        loader = loader.equals("fabric-loader") ? "fabric" :
-//                loader.equals("quilt-loader") ? "quilt" : loader;
-        adapter = new AddContentEntryAdapter(modList,null, mod -> {
-            // Handle mod button click event
-            onModButtonClick(mod);
-        });
-        recyclerView.setAdapter(adapter);
-
-        btnScanDependency.setOnClickListener(v -> {
-            modpackViewModel.fetchRequiredDependencies();
-        });
-
-        modpackViewModel.getDependencyModsLiveData().observe(getViewLifecycleOwner(), mods -> {
-            modList.clear();
-            modList.addAll(mods);
-            adapter.notifyDataSetChanged();
-        });
-        // Set up RecyclerView
-        recyclerModFiles.setLayoutManager(new LinearLayoutManager(getContext()));
-        modFileAdapter = new ModFileAdapter(new ArrayList<>(), modFile -> modpackViewModel.removeModFile(modFile));
-        recyclerModFiles.setAdapter(modFileAdapter);
-
+//        btnScanDependency.setOnClickListener(v -> {
+//            modpackViewModel.fetchRequiredDependencies();
+//        });
+//
+//        modpackViewModel.getDependencyModsLiveData().observe(getViewLifecycleOwner(), mods -> {
+//            modList.clear();
+//            modList.addAll(mods);
+//            adapter.notifyDataSetChanged();
+//        });
+//        // Set up RecyclerView
+//        recyclerModFiles.setLayoutManager(new LinearLayoutManager(getContext()));
+//        modFileAdapter = new ModFileAdapter(new ArrayList<>(), modFile -> modpackViewModel.removeModFile(modFile));
+//        recyclerModFiles.setAdapter(modFileAdapter);
+//
         if (getArguments() != null) {
             modpackName = getArguments().getString(ARG_MODPACK_NAME);
             textView.setText(modpackName);
@@ -112,43 +122,43 @@ public class ModpackDetailFragment extends Fragment {
             modpackViewModel.getModpack().observe(getViewLifecycleOwner(), modpack -> {
                 if (modpack != null) {
                     textView.setText(modpack.getName());
-                    modFileAdapter.updateList(modpack.getFiles());
+//                    modFileAdapter.updateList(modpack.getFiles());
                 }
             });
 
-            // Observe raw JSON text
-            modpackViewModel.getRawJson().observe(getViewLifecycleOwner(), textJsonContent::setText);
+//            // Observe raw JSON text
+//            modpackViewModel.getRawJson().observe(getViewLifecycleOwner(), textJsonContent::setText);
 
 
         }
-
-        btnAddContent.setOnClickListener(v -> {
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(android.R.id.content, AddContentFragment.newInstance(modpackViewModel.getModpack().getValue().getLoader(),modpackViewModel.getModpack().getValue().getMinecraftVersion())) // Replace with the new fragment
-                    .addToBackStack(null) // Add to back stack to allow back navigation
-                    .commit();
-        });
-        // Delete modpack button click
-        btnDelete.setOnClickListener(v -> deleteModpack());
-        btnScanDependency.setOnClickListener(v -> modpackViewModel.fetchRequiredDependencies());
-
-        fileExportLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                Uri uri = result.getData().getData();
-                if (uri != null) {
-                    modpackViewModel.handleExportResult(uri, requireContext(), new File(requireContext().getFilesDir(), "modpacks/" + modpackName + ".mrpack"));
-                }
-            }
-        });
+//
+//        btnAddContent.setOnClickListener(v -> {
+//            getParentFragmentManager()
+//                    .beginTransaction()
+//                    .replace(android.R.id.content, AddContentFragment.newInstance(modpackViewModel.getModpack().getValue().getLoader(),modpackViewModel.getModpack().getValue().getMinecraftVersion())) // Replace with the new fragment
+//                    .addToBackStack(null) // Add to back stack to allow back navigation
+//                    .commit();
+//        });
+//        // Delete modpack button click
+//        btnDelete.setOnClickListener(v -> deleteModpack());
+//        btnScanDependency.setOnClickListener(v -> modpackViewModel.fetchRequiredDependencies());
+//
+//        fileExportLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+//            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+//                Uri uri = result.getData().getData();
+//                if (uri != null) {
+//                    modpackViewModel.handleExportResult(uri, requireContext(), new File(requireContext().getFilesDir(), "modpacks/" + modpackName + ".mrpack"));
+//                }
+//            }
+//        });
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        modpackViewModel.clearState(); // Call a function to reset ViewModel state
-    }
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        modpackViewModel.clearState(); // Call a function to reset ViewModel state
+//    }
     private void deleteModpack() {
         File modpackDir = new File(requireContext().getFilesDir(), "modpacks/" + modpackName);
 
@@ -160,7 +170,7 @@ public class ModpackDetailFragment extends Fragment {
             if (getActivity() instanceof ModpackActivity) {
                 ((ModpackActivity) getActivity()).refreshModpacks();
             }
-
+            modpackViewModel.clearState();
             getParentFragmentManager().popBackStack(); // Go back
         }
     }
@@ -222,5 +232,8 @@ public class ModpackDetailFragment extends Fragment {
                 Log.e("AddContentEntryView", "Error fetching versions: " + t.getMessage());
             }
         });
+    }
+    public ModpackViewModel getModpackViewModel() {
+        return modpackViewModel;
     }
 }

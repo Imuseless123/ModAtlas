@@ -2,12 +2,14 @@ package com.example.modatlas.views;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -18,12 +20,19 @@ import android.view.animation.DecelerateInterpolator;
 import androidx.annotation.NonNull;
 import androidx.core.view.GestureDetectorCompat;
 
+import com.example.modatlas.MainActivity;
+import com.example.modatlas.R;
+import com.example.modatlas.SearchActivity;
+
+import java.util.List;
+
 public class OrbitMenuView extends View {
     private static final int ITEM_COUNT = 6;
     private float angleOffset = 90;
     private GestureDetectorCompat gestureDetector;
     private RectF[] buttonBounds;
     private boolean isDragging = false;
+    private String[] searchActivityList = {"mod","resourcepack","datapack","shader","plugin","modpack"} ;
 
 
     public OrbitMenuView(Context context, AttributeSet attrs) {
@@ -47,13 +56,15 @@ public class OrbitMenuView extends View {
         int radiusX = getWidth() / 3; // Horizontal stretch (oval)
         int radiusY = getHeight() / 4; // Vertical stretch (oval)
 
+        int bottomItemIndex = -1; // Store index of the bottom-most item
+
         for (int i = 0; i < ITEM_COUNT; i++) {
             double angle = Math.toRadians((360 / ITEM_COUNT) * i + angleOffset);
             float x = centerX + (float) (radiusX * Math.cos(angle));
             float y = centerY + (float) (radiusY * Math.sin(angle));
 
             // Button size depends on Y position (biggest at bottom, smallest at top)
-            float size = 60 + 120 * (1 + (float) Math.sin(angle)); // Range: 60 -> 120
+            float size = 80 + 100 * (1 + (float) Math.sin(angle)); // Range: 60 -> 120
 
             // Load and scale image
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(
@@ -66,8 +77,27 @@ public class OrbitMenuView extends View {
 
             // Store button bounds for touch detection
             buttonBounds[i] = new RectF(x - size / 2, y - size / 2, x + size / 2, y + size / 2);
+
+            // Check if this item is the bottom-most one (angle closest to 270°)
+            int normalizedAngle = Math.floorMod((int) (Math.toDegrees(angle) + 360), 360);
+            if (Math.abs(normalizedAngle - 90) < 10) {
+                bottomItemIndex = i + 1;
+            }
+
+
+        }
+
+        // Draw the index of the bottom-most item in the center
+        if (bottomItemIndex != -1) {
+            Paint textPaint = new Paint();
+            textPaint.setColor(getResources().getColor(R. color. gray_400));
+            textPaint.setTextSize(80);
+            textPaint.setTextAlign(Paint.Align.CENTER);
+            textPaint.setTypeface((Typeface.create("sans-serif-black", Typeface.NORMAL))); // Rounded and modern
+            canvas.drawText(searchActivityList[bottomItemIndex-1], centerX, centerY, textPaint);
         }
     }
+
 
 
 
@@ -81,6 +111,12 @@ public class OrbitMenuView extends View {
                 for (int i = 0; i < ITEM_COUNT; i++) {
                     if (buttonBounds[i] != null && buttonBounds[i].contains(event.getX(), event.getY())) {
                         Log.v("Button Clicked", "Item " + (i + 1));
+                        Intent intent = new Intent(getContext(), SearchActivity.class);
+//                        intent.putExtra("item_index", i + 1);  // Pass the clicked item index
+                        intent.putExtra("id", searchActivityList[i]);
+
+//                        intent.putExtra("id", "mod");
+                        getContext().startActivity(intent);
                     }
                 }
             }

@@ -98,6 +98,7 @@ public class ModpackViewModel extends AndroidViewModel {
 
 
     public void loadModpack(String modpackName) {
+        clearState();
         File jsonFile = new File(getApplication().getFilesDir(), "modpacks/" + modpackName + "/modrinth.index.json");
         if (!jsonFile.exists()) {
             rawJsonLiveData.postValue("modrinth.index.json not found.");
@@ -151,6 +152,8 @@ public class ModpackViewModel extends AndroidViewModel {
 
             // Set data to LiveData
             Modpack modpack = new Modpack(name, minecraftVersion, loader, loaderVersion, files);
+
+            Log.v("FILE","exist?: "+files.size());
             modpackLiveData.postValue(modpack);
             Log.v("Modpack", "Modpack loaded into ViewModel: " + modpack.getLoader());
 
@@ -159,6 +162,7 @@ public class ModpackViewModel extends AndroidViewModel {
         }
     }
     public void addModFile(ModFile modFile) {
+        Log.v("VIEWMODEL",modpackLiveData.getValue().toString());
         if(modpackLiveData.getValue().getFiles().contains(modFile)){
             Toast.makeText(getApplication(), modFile.getFilename()+" is already exists in the pack", Toast.LENGTH_SHORT).show();
 

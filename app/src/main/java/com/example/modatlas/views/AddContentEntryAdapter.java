@@ -53,7 +53,13 @@ public class AddContentEntryAdapter extends RecyclerView.Adapter<AddContentEntry
 
         public void bind(Mod mod, String loader, OnModButtonClickListener listener) {
             addContentEntryView.bind(mod, loader);
-            addContentEntryView.setOnActionButtonClickListener(slug -> listener.onModButtonClick(mod));
+            addContentEntryView.setOnActionButtonClickListener(slug -> {
+                if (mod.getImportState() == LoadState.READY) {
+                    mod.setImportState(LoadState.LOADING);
+                    addContentEntryView.setImportState(LoadState.LOADING);
+                }
+                listener.onModButtonClick(mod);
+            });
         }
     }
 }

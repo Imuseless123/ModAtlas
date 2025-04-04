@@ -11,118 +11,30 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/green">
-
-        <Button
-            android:id="@+id/signInButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="sign in"/>
-        <Button
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/background" />
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnmrpack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
+            android:layout_marginTop="32dp"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/primary"
+            android:textColor="@color/background"
+            android:layout_centerHorizontal="true"
             android:text="mrpack" />
+
+        <com.example.modatlas.views.OrbitMenuView
+            android:layout_width="match_parent"
+            android:layout_height="256dp"
+            android:layout_centerInParent="true"/>
     </RelativeLayout>
 
-    <com.example.modatlas.views.OrbitMenuView
-        android:layout_width="match_parent"
-        android:layout_height="256dp" />
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:clickable="false"
-        android:focusable="false">
-        <ImageView
-            android:id="@+id/mods"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/cube" />
-        <TextView
-            android:id="@+id/modsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mods"
-            android:layout_below="@+id/mods"/>
-
-        <ImageView
-            android:id="@+id/dataPacks"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_below="@+id/modsText"
-            android:src="@drawable/folder"/>
-        <TextView
-            android:id="@+id/dataPacksText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Data Packs"
-            android:layout_below="@+id/dataPacks"/>
-
-        <ImageView
-            android:id="@+id/modPacks"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_below="@+id/dataPacksText"
-            android:src="@drawable/product"
-            />
-        <TextView
-            android:id="@+id/modPacksText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/modPacks"
-            android:text="Mods Packs"/>
-
-        <ImageView
-            android:id="@+id/resourcePacks"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/image"
-            android:layout_alignParentRight="true"/>
-        <TextView
-            android:id="@+id/resourcePacksText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mods"
-            android:layout_below="@+id/resourcePacks"
-            android:layout_alignParentRight="true"/>
-
-        <ImageView
-            android:id="@+id/shaders"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/resourcePacksText"
-            android:src="@drawable/shade"/>
-        <TextView
-            android:id="@+id/shadersText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/shaders"
-            android:text="Shaders"
-            />
-
-        <ImageView
-            android:id="@+id/plugins"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/shadersText"
-            android:src="@drawable/plug"
-            />
-        <TextView
-            android:id="@+id/pluginsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/plugins"
-            android:text="Plugins"
-            />
 
 
-    </RelativeLayout>
 
 </LinearLayout>

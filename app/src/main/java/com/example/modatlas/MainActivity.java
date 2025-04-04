@@ -18,14 +18,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
     private static final String state = "State";
-    private Button signInButton;
     private Button mrpackButton;
-    private ImageView mods;
-    private ImageView resourcePacks;
-    private ImageView dataPacks;
-    private ImageView shaders;
-    private ImageView modPacks;
-    private ImageView plugins;
 
     private boolean isSpinnerInitialized = false;
 
@@ -47,14 +40,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
-        this.signInButton = findViewById(R.id.signInButton);
         this.mrpackButton = findViewById(R.id.btnmrpack);
-        this.mods = findViewById(R.id.mods);
-        this.resourcePacks = findViewById(R.id.resourcePacks);
-        this.dataPacks = findViewById(R.id.dataPacks);
-        this.shaders = findViewById(R.id.shaders);
-        this.modPacks = findViewById(R.id.modPacks);
-        this.plugins = findViewById(R.id.plugins);
         this.initListener();
     }
 
@@ -67,65 +53,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        this.mods.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
-                // Pass a string value
-                searchModsIntent.putExtra("id", "mod");
-                startActivity(searchModsIntent);
-            }
-        });
 
-        this.resourcePacks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
-                // Pass a string value
-                searchModsIntent.putExtra("id", "resourcepack");
-                startActivity(searchModsIntent);
-            }
-        });
-
-        this.dataPacks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
-                // Pass a string value
-                searchModsIntent.putExtra("id", "datapack");
-                startActivity(searchModsIntent);
-            }
-        });
-
-        this.shaders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
-                // Pass a string value
-                searchModsIntent.putExtra("id", "shader");
-                startActivity(searchModsIntent);
-            }
-        });
-
-        this.modPacks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
-                // Pass a string value
-                searchModsIntent.putExtra("id", "modpack");
-                startActivity(searchModsIntent);
-            }
-        });
-
-        this.plugins.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent searchModsIntent = new Intent(MainActivity.this, SearchActivity.class);
-                // Pass a string value
-                searchModsIntent.putExtra("id", "plugin");
-                startActivity(searchModsIntent);
-            }
-        });
     }
 
     @Override

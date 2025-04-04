@@ -2,22 +2,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="10dp"
     android:gravity="center_vertical">
-
-    <TextView
-        android:id="@+id/textModFileName"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="16sp"/>
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@drawable/rounded_bg"
+        >
+        <TextView
+            android:id="@+id/textModFileName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:textColor="@color/on_surface"/>
 
-    <Button
-        android:id="@+id/btnRemoveMod"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Remove"
-        android:backgroundTint="@android:color/holo_red_light"
-        android:textColor="@android:color/white"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRemoveMod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:textColor="@color/surface"
+            app:cornerRadius="16dp"/>
+    </LinearLayout>
+
+
 </LinearLayout>

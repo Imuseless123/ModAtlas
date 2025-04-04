@@ -2,10 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingVertical="32dp"
-    android:background="@color/design_default_color_background">
-
+    android:background="@color/surface">
     <TextView
         android:id="@+id/textModpackName"
         android:layout_width="match_parent"
@@ -13,63 +12,96 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:padding="10dp"/>
-    <Button
-        android:id="@+id/btnExportModpack"
+        android:padding="10dp"
+        android:textColor="@color/primary"/>
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Export Modpack"
-        android:backgroundTint="@android:color/holo_blue_light"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="10dp"/>
-    <Button
-        android:id="@+id/btnAddContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="+ Add content"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="20dp"/>
-    <Button
-        android:id="@+id/btnScanDependency"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Scan for dependency"
-        android:backgroundTint="@android:color/holo_green_dark"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="20dp"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="10dp"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerModFiles"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="10dp"/>
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="10dp">
 
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
-        <TextView
-            android:id="@+id/textJsonContent"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:padding="5dp"/>
-    </ScrollView>
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/primary"
+            app:tabTextColor="@color/on_primary"
+            app:tabSelectedTextColor="@color/primary"
+            android:background="@color/surface"
+            />
 
-    <Button
-        android:id="@+id/btnDeleteModpack"
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Delete Modpack"
-        android:backgroundTint="@android:color/holo_red_light"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="20dp"/>
+        android:layout_height="match_parent" />
+<!--    <TextView-->
+<!--        android:id="@+id/textModpackName"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textSize="18sp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:gravity="center"-->
+<!--        android:padding="10dp"/>-->
+<!--    <Button-->
+<!--        android:id="@+id/btnExportModpack"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Export Modpack"-->
+<!--        android:backgroundTint="@android:color/holo_blue_light"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:layout_marginTop="10dp"/>-->
+<!--    <Button-->
+<!--        android:id="@+id/btnAddContent"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="+ Add content"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:layout_marginTop="20dp"/>-->
+<!--    <Button-->
+<!--        android:id="@+id/btnScanDependency"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Scan for dependency"-->
+<!--        android:backgroundTint="@android:color/holo_green_dark"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:layout_marginTop="20dp"/>-->
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/recyclerView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:padding="10dp"/>-->
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/recyclerModFiles"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:padding="10dp"/>-->
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:padding="10dp">-->
+
+
+<!--        <TextView-->
+<!--            android:id="@+id/textJsonContent"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="14sp"-->
+<!--            android:padding="5dp"/>-->
+<!--    </ScrollView>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/btnDeleteModpack"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Delete Modpack"-->
+<!--        android:backgroundTint="@android:color/holo_red_light"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:layout_marginTop="20dp"/>-->
 </LinearLayout>
