@@ -18,12 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.modatlas.fragments.DataPackFilterFragment;
-import com.example.modatlas.fragments.ModFilterFragment;
-import com.example.modatlas.fragments.ModPackFilterFragment;
-import com.example.modatlas.fragments.PluginFilterFragment;
-import com.example.modatlas.fragments.ResourcePackFilterFragment;
-import com.example.modatlas.fragments.ShaderFilterFragment;
+import com.example.modatlas.fragments.FilterFragment;
 import com.example.modatlas.models.Mod;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.ModrinthResponse;
@@ -176,26 +171,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void replaceFilterFragment(){
-        Fragment f = new ModFilterFragment();
-        switch (this.searchId){
-            case urlString.allDataPack:
-                f = new DataPackFilterFragment();
-                break;
-            case urlString.allModPack:
-                f = new ModPackFilterFragment();
-                break;
-            case urlString.allPlugin:
-                f = new PluginFilterFragment();
-                break;
-            case urlString.allShader:
-                f = new ShaderFilterFragment();
-                break;
-            case urlString.allResourcePack:
-                f = new ResourcePackFilterFragment();
-                break;
-            default:
-                break;
-        }
+        Fragment f = new FilterFragment();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fillter,f);
         transaction.addToBackStack(null);

@@ -3,19 +3,28 @@ package com.example.modatlas.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.modatlas.R;
+import com.example.modatlas.models.FilterHeader;
+import com.example.modatlas.models.FilterItem;
+import com.example.modatlas.models.FilterTag;
+import com.example.modatlas.views.FilterAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ShaderFilterFragment#newInstance} factory method to
+ * Use the {@link FilterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ShaderFilterFragment extends Fragment {
+public class FilterFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,8 +34,10 @@ public class ShaderFilterFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private RecyclerView recyclerView;
+    private FilterAdapter gameVersionAdapter, loaderAdapter;
 
-    public ShaderFilterFragment() {
+    public FilterFragment() {
         // Required empty public constructor
     }
 
@@ -36,11 +47,11 @@ public class ShaderFilterFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ShaderFilterFragment.
+     * @return A new instance of fragment ModFilterFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ShaderFilterFragment newInstance(String param1, String param2) {
-        ShaderFilterFragment fragment = new ShaderFilterFragment();
+    public static FilterFragment newInstance(String param1, String param2) {
+        FilterFragment fragment = new FilterFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -60,7 +71,26 @@ public class ShaderFilterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_shader_filter, container, false);
+        View view = inflater.inflate(R.layout.fragment_filter, container, false);
+        recyclerView = view.findViewById(R.id.modFilterTable);
+
+        List<FilterItem> tes = new ArrayList<>();
+        tes.add(new FilterHeader("game version"));
+        tes.add(new FilterTag("1.2"));
+        tes.add(new FilterTag("1.4"));
+        tes.add(new FilterTag("1.5"));
+        tes.add(new FilterTag("1.6"));
+        tes.add(new FilterHeader("game version"));
+        tes.add(new FilterTag("1.2"));
+        tes.add(new FilterTag("1.4"));
+        tes.add(new FilterTag("1.5"));
+        tes.add(new FilterTag("1.6"));
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        gameVersionAdapter = new FilterAdapter(getContext(),tes);
+        recyclerView.setAdapter(gameVersionAdapter);
+
+
+        return view;
     }
 }
