@@ -15,10 +15,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.modatlas.fragments.FilterFragment;
+import com.example.modatlas.viewmodels.FilterTable;
 import com.example.modatlas.models.Mod;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.ModrinthResponse;
@@ -42,11 +44,12 @@ public class SearchActivity extends AppCompatActivity {
     private RecyclerView modItems;
     private FragmentManager fragmentManager;
     private TextView openFilter;
-    private String searchId;
+    private static String searchId;
     private boolean isLoading;
     private boolean isLastPage;
     private final int pageSize = 20;
     private boolean isFilterOpen;
+    private FilterTable filterTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,9 @@ public class SearchActivity extends AppCompatActivity {
         });
 
         this.init();
-
+        filterTable.getSelectedVersions().observe(this, state ->{
+            Log.i("test","saved tag: "+ state);
+        });
     }
 
     private void init(){
@@ -70,10 +75,12 @@ public class SearchActivity extends AppCompatActivity {
         this.isLastPage = false;
         this.isFilterOpen = false;
         this.mod = new ArrayList<>();
+        this.filterTable = new ViewModelProvider(this).get(FilterTable.class);
         Intent intent = getIntent();
         this.fragmentManager = getSupportFragmentManager();
         this.openFilter = findViewById(R.id.openFilter);
         this.searchId = urlString.getProjectType( intent.getStringExtra("id"));
+        Log.i("test",this.searchId);
         this.api = RetrofitClient.getApi();
         this.modItems = findViewById(R.id.mod_items);
         this.modItems.setLayoutManager(new LinearLayoutManager(this));
@@ -130,6 +137,19 @@ public class SearchActivity extends AppCompatActivity {
                     popFilterFragment();
                     openFilter.setText("open filter");
                     isFilterOpen = false;
+//                    filterTable.getVersionAt(0);
+                    List<String> tag = filterTable.getSelectedVersions().getValue();
+                    for (String s:tag) {
+//                        searchId = urlString.getVersion()
+//                        mod.clear();
+//                        modItems.setAdapter();
+                        Log.i("test",s);
+                    }
+                    if (tag != null) {
+                        Log.i("test", "Selected versions: " + tag.toString());
+                    } else {
+                        Log.i("test", "Selected versions: null");
+                    }
                 }
 
             }
@@ -171,7 +191,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void replaceFilterFragment(){
-        Fragment f = new FilterFragment();
+        Fragment f = FilterFragment.newInstance(searchId);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fillter,f);
         transaction.addToBackStack(null);

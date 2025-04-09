@@ -2,10 +2,12 @@ package com.example.modatlas.models;
 
 public class FilterTag extends FilterItem{
     private boolean isSelected;
-    public FilterTag(String itemName) {
+    private String header;
+    public FilterTag(String itemName, String header) {
         super(itemName);
         this.setType(true);
         isSelected = false;
+        this.header = header;
     }
 
     public boolean isSelected() {
@@ -14,5 +16,9 @@ public class FilterTag extends FilterItem{
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public String getHeader() {
+        return header;
     }
 }

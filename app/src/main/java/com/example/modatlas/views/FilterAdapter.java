@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,18 +14,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.modatlas.R;
 import com.example.modatlas.models.FilterHeader;
 import com.example.modatlas.models.FilterItem;
+import com.example.modatlas.viewmodels.FilterTable;
 import com.example.modatlas.models.FilterTag;
+import com.example.modatlas.models.RecyclerViewInterface;
 
 import java.util.List;
 
 public class FilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
+    private final RecyclerViewInterface recyclerViewInterface;
     private List<FilterItem> filterList;
-    Context context;
-    public FilterAdapter(Context context, List<FilterItem> items) {
+    static Context context;
+    public FilterAdapter(Context context, List<FilterItem> items, RecyclerViewInterface recyclerViewInterface) {
         this.context = context;
         this.filterList = items;
+        this.recyclerViewInterface = recyclerViewInterface;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class FilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         } else {
             Log.i("addssas","TYPE_ITEM: "+viewType);
             View view = LayoutInflater.from(context).inflate(R.layout.filter_tag, parent, false);
-            return new ItemViewHolder(view);
+            return new ItemViewHolder(view, recyclerViewInterface);
         }
     }
 
@@ -90,15 +93,29 @@ public class FilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             super(itemView);
             filterHeader = itemView.findViewById(R.id.filter_header);
         }
+
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView filterTag;
         ImageView checkIcon;
-        public ItemViewHolder(@NonNull View itemView) {
+        FilterTable vm;
+        public ItemViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
             filterTag = itemView.findViewById(R.id.filter_tag);
             checkIcon = itemView.findViewById(R.id.check_icon);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (recyclerViewInterface != null){
+                        int position = getAdapterPosition();
+
+                        if (position != RecyclerView.NO_POSITION){
+                            recyclerViewInterface.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }
