@@ -35,4 +35,8 @@ public interface ModrinthApi {
     Call<List<ModVersion>> getModVersionsById(@Query("ids") String ids);
     @GET("tag/game_version")
     Call<List<GameVersion>> getGameVersion();
+    @GET("tag/loader")
+    Call<List<Loader>> getLoader();
+    @GET("tag/category")
+    Call<List<Category>> getCategory();
 }

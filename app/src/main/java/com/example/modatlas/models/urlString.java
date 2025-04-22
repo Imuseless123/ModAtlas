@@ -31,21 +31,23 @@ public class urlString {
 //        return projectType;
 //    }
 
-    public static String getVersion(String version) {
+    public static void setProjectType(String projectType){
+        if (containsColon(projectType)){
+            facet = "[[\""+projectType+"\"]]";
+        } else{
+            facet = "[[\"project_type:"+projectType+"\"]]";
+        }
+    }
+
+    public static void addVersion(String version) {
         if (containsColon(version)){
             insertIntoFacet("[\""+version+"\"]");
         } else{
             insertIntoFacet("[\"versions:"+version+"\"]");
         }
-        return facet;
     }
 
-    public static String getProjectType(String projectType) {
-        if (containsColon(projectType)){
-            insertIntoFacet("[\""+projectType+"\"]");
-        } else{
-            insertIntoFacet("[\"project_type:"+projectType+"\"]");
-        }
+    public static String getFacet() {
         return facet;
     }
 

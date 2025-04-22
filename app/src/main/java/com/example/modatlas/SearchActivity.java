@@ -79,7 +79,8 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         this.fragmentManager = getSupportFragmentManager();
         this.openFilter = findViewById(R.id.openFilter);
-        this.searchId = urlString.getProjectType( intent.getStringExtra("id"));
+        urlString.setProjectType(intent.getStringExtra("id"));
+        this.searchId = urlString.getFacet();
         Log.i("test",this.searchId);
         this.api = RetrofitClient.getApi();
         this.modItems = findViewById(R.id.mod_items);
@@ -124,7 +125,8 @@ public class SearchActivity extends AppCompatActivity {
 //                    filterTable.getVersionAt(0);
                     List<String> tag = filterTable.getSelectedVersions().getValue();
                     for (String s:tag) {
-                        searchId = urlString.getVersion(s);
+                        urlString.addVersion(s);
+                        searchId = urlString.getFacet();
                         getMods();
                         Log.i("test",s);
                     }
@@ -202,6 +204,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void popFilterFragment(){
-        fragmentManager.popBackStack();
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }

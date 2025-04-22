@@ -46,10 +46,10 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
         // Required empty public constructor
     }
 
-    public static FilterFragment newInstance(String filterid) {
+    public static FilterFragment newInstance(String filterId) {
         FilterFragment fragment = new FilterFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_FILTER_ID, filterid);
+        args.putString(ARG_FILTER_ID, filterId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,7 +70,7 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
         recyclerView = view.findViewById(R.id.modFilterTable);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        Log.i("test",filterId);
 //        GameVersionFilter gameVersionFilter = new GameVersionFilter(gameVersionAdapter, recyclerView,getContext(),FilterFragment.this);
 
 

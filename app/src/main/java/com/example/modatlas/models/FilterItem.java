@@ -4,6 +4,7 @@ public class FilterItem {
     protected boolean isTag;
     protected String itemName;
     protected String header;
+    protected boolean isSelected;
     public FilterItem(String itemName){
         this.itemName = itemName;
     }
@@ -22,5 +23,13 @@ public class FilterItem {
 
     public String getHeader() {
         return header;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

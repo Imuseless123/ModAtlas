@@ -46,11 +46,11 @@ public class FilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_HEADER) {
-            Log.i("test","TYPE_HEADER: "+viewType);
+//            Log.i("test","TYPE_HEADER: "+viewType);
             View view = LayoutInflater.from(context).inflate(R.layout.filter_header, parent, false);
             return new HeaderViewHolder(view, recyclerViewInterface);
         } else {
-            Log.i("test","TYPE_ITEM: "+viewType);
+//            Log.i("test","TYPE_ITEM: "+viewType);
             View view = LayoutInflater.from(context).inflate(R.layout.filter_tag, parent, false);
             return new ItemViewHolder(view, recyclerViewInterface);
         }
