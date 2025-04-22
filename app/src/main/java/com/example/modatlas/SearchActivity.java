@@ -84,23 +84,7 @@ public class SearchActivity extends AppCompatActivity {
         this.api = RetrofitClient.getApi();
         this.modItems = findViewById(R.id.mod_items);
         this.modItems.setLayoutManager(new LinearLayoutManager(this));
-        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,this.searchId).enqueue(new Callback<ModrinthResponse>() {
-            @Override
-            public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
-                if (response.body() != null) {
-                    mod = response.body().getHits();
-                    // Now that we have the data, update the RecyclerView
-                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod));
-                } else {
-                    Log.e("test", "Response body is null");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ModrinthResponse> call, Throwable t) {
-                Log.e("test", "API call failed: " + t.getMessage());
-            }
-        });
+        this.getMods();
 
         this.initListener();
     }
@@ -140,9 +124,8 @@ public class SearchActivity extends AppCompatActivity {
 //                    filterTable.getVersionAt(0);
                     List<String> tag = filterTable.getSelectedVersions().getValue();
                     for (String s:tag) {
-//                        searchId = urlString.getVersion()
-//                        mod.clear();
-//                        modItems.setAdapter();
+                        searchId = urlString.getVersion(s);
+                        getMods();
                         Log.i("test",s);
                     }
                     if (tag != null) {
@@ -152,6 +135,26 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 }
 
+            }
+        });
+    }
+
+    private void getMods(){
+        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,this.searchId).enqueue(new Callback<ModrinthResponse>() {
+            @Override
+            public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
+                if (response.body() != null) {
+                    mod = response.body().getHits();
+                    // Now that we have the data, update the RecyclerView
+                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod));
+                } else {
+                    Log.e("test", "Response body is null");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModrinthResponse> call, Throwable t) {
+                Log.e("test", "API call failed: " + t.getMessage());
             }
         });
     }

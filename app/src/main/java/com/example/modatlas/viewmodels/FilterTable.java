@@ -51,4 +51,12 @@ public class FilterTable extends ViewModel {
     public void clearVersions() {
         selectedTag.setValue(new ArrayList<>());
     }
+
+    public void setIsChange(boolean isChange){
+        this.isChange.setValue(isChange);
+    }
+
+    public boolean getIsChange(){
+        return Boolean.TRUE.equals(isChange.getValue());
+    }
 }
