@@ -6,6 +6,7 @@ public class FilterHeader extends FilterItem{
         super(itemName);
         this.setType(false);
         isExpanded = false;
+        header = itemName;
     }
 
     public boolean isExpanded() {

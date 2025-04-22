@@ -3,6 +3,7 @@ package com.example.modatlas.models;
 public class FilterItem {
     protected boolean isTag;
     protected String itemName;
+    protected String header;
     public FilterItem(String itemName){
         this.itemName = itemName;
     }
@@ -17,5 +18,9 @@ public class FilterItem {
 
     public String getItemName() {
         return itemName;
+    }
+
+    public String getHeader() {
+        return header;
     }
 }

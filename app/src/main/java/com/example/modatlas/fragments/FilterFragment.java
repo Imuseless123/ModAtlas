@@ -36,7 +36,7 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
     private static final String ARG_FILTER_ID = "param1";
     private String filterId;
     private RecyclerView recyclerView;
-    private FilterAdapter gameVersionAdapter, loaderAdapter;
+    private FilterAdapter filterAdapter;
     private ModrinthApi api;
     private List<GameVersion> versions = new ArrayList<>();
     private List<FilterItem> tes = new ArrayList<>();
@@ -75,6 +75,12 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
 
 
         this.api = RetrofitClient.getApi();
+        addVersionFilter();
+
+        return view;
+    }
+
+    private void addVersionFilter(){
         this.api.getGameVersion().enqueue(new Callback<List<GameVersion>>() {
             @Override
             public void onResponse(Call<List<GameVersion>> call, Response<List<GameVersion>> response) {
@@ -85,7 +91,7 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
 
                     Log.i("test","version: "+response.body());
                     int a = 0;
-                    tes.add(new FilterHeader("game version"));
+                    tes.add(new FilterHeader("versions"));
 
                     for (GameVersion v: versions) {
                         a++;
@@ -97,8 +103,9 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
 //                        filterTable.addVersion(v.getVersion());
 //                    }
 
-                    gameVersionAdapter = new FilterAdapter(getContext(),tes, FilterFragment.this);
-                    recyclerView.setAdapter(gameVersionAdapter);
+                    filterAdapter = new FilterAdapter(getContext(),tes, FilterFragment.this);
+                    recyclerView.setAdapter(filterAdapter);
+
                 } else {
                     Log.e("test", "Response body is null");
                 }
@@ -109,25 +116,52 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                 Log.e("test", "API call failed: " + t.getMessage());
             }
         });
+    }
 
-//        gameVersionAdapter = new FilterAdapter(getContext(),a.getItemList(), FilterFragment.this);
-//        recyclerView.setAdapter(gameVersionAdapter);
-        return view;
+    private void removeVersionFilter(){
+        for (GameVersion v:versions) {
+            tes.removeIf(item -> item.getItemName().equals(v.getVersion()));
+        }
     }
 
     @Override
     public void onItemClick(int position) {
         String selectedTag = tes.get(position).getItemName();
         String header = "";
+        int headerPosition = position;
         if (tes.get(position).isTag()){
-            header = ((FilterTag) tes.get(position)).getHeader();
-        }
-        Log.i( "test",selectedTag);
+            header = tes.get(position).getHeader();
+            Log.i( "test",selectedTag);
 
-        if (!filterTable.haveVersion(header+":"+selectedTag)){
-            filterTable.addVersion(header+":"+selectedTag);
+            if (!filterTable.haveVersion(header+":"+selectedTag)){
+                filterTable.addVersion(header+":"+selectedTag);
+            } else {
+                filterTable.removeVersion(header+":"+selectedTag);
+            }
         } else {
-            filterTable.removeVersion(header+":"+selectedTag);
+            Log.i("test",selectedTag);
+            header = tes.get(position).getHeader();
+            boolean matched = false;
+            for (FilterItem i:tes) {
+                Log.i("test",i.getItemName());
+                if (i.isTag() && (i.getHeader().equals(header))){
+                    removeVersionFilter();
+                    filterAdapter = new FilterAdapter(getContext(),tes, FilterFragment.this);
+                    recyclerView.setAdapter(filterAdapter);
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                for (GameVersion v:versions) {
+                    tes.add(headerPosition + 1, new FilterTag(v.getVersion(),"versions"));
+                    headerPosition++;
+                }
+                filterAdapter = new FilterAdapter(getContext(),tes, FilterFragment.this);
+                recyclerView.setAdapter(filterAdapter);
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
         }
 
 
