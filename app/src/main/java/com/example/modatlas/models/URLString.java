@@ -5,14 +5,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class urlString {
+public class URLString {
     public static String facet = "[]";
-//    public static final String allMod= "[[\"project_type:mod\"]]";
-//    public static final String allModPack= "[[\"project_type:modpack\"]]";
-//    public static final String allDataPack= "[[\"project_type:datapack\"]]";
-//    public static final String allPlugin= "[[\"project_type:plugin\"]]";
-//    public static final String allShader= "[[\"project_type:shader\"]]";
-//    public static final String allResourcePack= "[[\"project_type:resourcepack\"]]";
+    public static String loader = "";
+    public static final String modId= "[[\"project_type:mod\"]]";
+    public static final String modPackId= "[[\"project_type:modpack\"]]";
+    public static final String dataPackId= "[[\"project_type:datapack\"]]";
+    public static final String pluginId= "[[\"project_type:plugin\"]]";
+    public static final String shaderId= "[[\"project_type:shader\"]]";
+    public static final String resourcePackId= "[[\"project_type:resourcepack\"]]";
 //
 //    public static String getProjectType(String projectType){
 //        if(projectType.equals("mod")){
@@ -33,11 +34,20 @@ public class urlString {
 
     public static void setProjectType(String projectType){
         if (containsColon(projectType)){
-            facet = "[[\""+projectType+"\"]]";
+            facet = projectType;
         } else{
             facet = "[[\"project_type:"+projectType+"\"]]";
         }
     }
+
+//    public static String removeProjectType(String projectType) {
+//        if (containsColon(projectType)){
+//            insertIntoFacet("[\""+projectType+"\"]");
+//        } else{
+//            insertIntoFacet("[\"project_type:"+projectType+"\"]");
+//        }
+//        return facet;
+//    }
 
     public static void addVersion(String version) {
         if (containsColon(version)){
@@ -47,26 +57,37 @@ public class urlString {
         }
     }
 
-    public static String getFacet() {
-        return facet;
+//    public static String removeVersion(String version) {
+//        if (containsColon(version)){
+//            insertIntoFacet("[\""+version+"\"]");
+//        } else{
+//            insertIntoFacet("[\"versions:"+version+"\"]");
+//        }
+//        return facet;
+//    }
+
+    public static void addCategory(String category){
+        if (containsColon(category)){
+            insertIntoFacet("[\""+category+"\"]");
+        } else{
+            insertIntoFacet("[\"categories:"+category+"\"]");
+        }
     }
 
-    public static String removeVersion(String version) {
-        if (containsColon(version)){
-            insertIntoFacet("[\""+version+"\"]");
-        } else{
-            insertIntoFacet("[\"versions:"+version+"\"]");
+    public static void addLoader(String loader){
+        if (containsColon(loader)){
+            insertIntoLoader(loader.substring(loader.indexOf(":") + 1).trim());
         }
-        return facet;
     }
 
-    public static String removeProjectType(String projectType) {
-        if (containsColon(projectType)){
-            insertIntoFacet("[\""+projectType+"\"]");
-        } else{
-            insertIntoFacet("[\"project_type:"+projectType+"\"]");
+    public static void addFacet(String value){
+        if (value.contains("versions")){
+            addVersion(value);
+        } else if (value.contains("categories")) {
+            addCategory(value);
+        } else if (value.contains("loader")) {
+            addLoader(value);
         }
-        return facet;
     }
 
     private static void insertIntoFacet(String value) {
@@ -80,6 +101,16 @@ public class urlString {
 
         // Add the new value and re-append the closing bracket
         facet += value + "]";
+    }
+
+    private static void insertIntoLoader(String value){
+        // Check if it's empty
+        if (!loader.equals("")) {
+            loader += ", ";
+        }
+
+        // Add the new value and re-append the closing bracket
+        loader += value;
     }
 
     private static void removeFromFacet(String value) {
@@ -96,8 +127,15 @@ public class urlString {
         facet = "[" + String.join(", ", parts) + "]";
     }
 
+    public static void resetFacet(){
+        facet = "[]";
+    }
+
+    public static void resetLoader(){
+        loader = "";
+    }
+
     private static boolean containsColon(String input) {
         return input != null && input.contains(":");
     }
-
 }

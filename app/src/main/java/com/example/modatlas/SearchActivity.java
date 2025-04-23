@@ -20,12 +20,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.modatlas.fragments.FilterFragment;
+import com.example.modatlas.models.URLString;
 import com.example.modatlas.viewmodels.FilterTable;
 import com.example.modatlas.models.Mod;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.ModrinthResponse;
 import com.example.modatlas.models.RetrofitClient;
-import com.example.modatlas.models.urlString;
 import com.example.modatlas.views.ModItemAdapter;
 
 import java.util.ArrayList;
@@ -39,12 +39,14 @@ public class SearchActivity extends AppCompatActivity {
 
     private ModrinthApi api;
     private String query;
+    private String loader;
     private int currentPage;
     private List<Mod> mod;
     private RecyclerView modItems;
     private FragmentManager fragmentManager;
     private TextView openFilter;
     private static String searchId;
+    private String facet;
     private boolean isLoading;
     private boolean isLastPage;
     private final int pageSize = 20;
@@ -74,14 +76,16 @@ public class SearchActivity extends AppCompatActivity {
         this.isLoading = false;
         this.isLastPage = false;
         this.isFilterOpen = false;
+        this.loader = "";
         this.mod = new ArrayList<>();
         this.filterTable = new ViewModelProvider(this).get(FilterTable.class);
         Intent intent = getIntent();
         this.fragmentManager = getSupportFragmentManager();
         this.openFilter = findViewById(R.id.openFilter);
-        urlString.setProjectType(intent.getStringExtra("id"));
-        this.searchId = urlString.getFacet();
+        URLString.setProjectType(intent.getStringExtra("id"));
+        this.searchId = URLString.facet;
         Log.i("test",this.searchId);
+        this.facet = URLString.facet;
         this.api = RetrofitClient.getApi();
         this.modItems = findViewById(R.id.mod_items);
         this.modItems.setLayoutManager(new LinearLayoutManager(this));
@@ -124,12 +128,17 @@ public class SearchActivity extends AppCompatActivity {
                     isFilterOpen = false;
 //                    filterTable.getVersionAt(0);
                     List<String> tag = filterTable.getSelectedVersions().getValue();
+                    URLString.setProjectType(searchId);
+                    URLString.resetLoader();
                     for (String s:tag) {
-                        urlString.addVersion(s);
-                        searchId = urlString.getFacet();
+                        URLString.addFacet(s);
+                        facet = URLString.facet;
+                        loader = URLString.loader;
                         getMods();
                         Log.i("test",s);
                     }
+                    Log.i("test",facet);
+                    Log.i("test",loader);
                     if (tag != null) {
                         Log.i("test", "Selected versions: " + tag.toString());
                     } else {
@@ -142,7 +151,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void getMods(){
-        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,this.searchId).enqueue(new Callback<ModrinthResponse>() {
+        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,this.facet,this.loader).enqueue(new Callback<ModrinthResponse>() {
             @Override
             public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
                 if (response.body() != null) {
@@ -165,7 +174,7 @@ public class SearchActivity extends AppCompatActivity {
         isLoading = true;
         currentPage++;
 
-        api.searchFacetMod(query, pageSize, currentPage * pageSize, this.searchId)
+        api.searchFacetMod(query, pageSize, currentPage * pageSize, this.facet,this.loader)
                 .enqueue(new Callback<ModrinthResponse>() {
                     @Override
                     public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {

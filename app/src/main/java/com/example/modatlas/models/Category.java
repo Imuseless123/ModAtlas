@@ -13,7 +13,7 @@ public class Category {
     private String projectType;
 
     @SerializedName("header")
-    private boolean header;
+    private String header;
 
     public String getIcon() {
         return icon;
@@ -27,7 +27,7 @@ public class Category {
         return projectType;
     }
 
-    public boolean isHeader() {
+    public String getHeader() {
         return header;
     }
 }

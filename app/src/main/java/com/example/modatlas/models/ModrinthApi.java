@@ -22,7 +22,8 @@ public interface ModrinthApi {
             @Query("query") String query,
             @Query("limit") int limit,
             @Query("offset") int offset,
-            @Query("facets") String facets  // Pass facets as a query parameter
+            @Query("facets") String facets,  // Pass facets as a query parameter
+            @Query("loader") String loader
     );
     @GET("project/{slug}/version")
     Call<List<ModVersion>> getModVersions(@Path("slug") String slug);
