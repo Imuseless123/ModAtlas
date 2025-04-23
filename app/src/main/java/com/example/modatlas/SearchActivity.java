@@ -15,20 +15,17 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.modatlas.fragments.DataPackFilterFragment;
-import com.example.modatlas.fragments.ModFilterFragment;
-import com.example.modatlas.fragments.ModPackFilterFragment;
-import com.example.modatlas.fragments.PluginFilterFragment;
-import com.example.modatlas.fragments.ResourcePackFilterFragment;
-import com.example.modatlas.fragments.ShaderFilterFragment;
+import com.example.modatlas.fragments.FilterFragment;
+import com.example.modatlas.models.URLString;
+import com.example.modatlas.viewmodels.FilterTable;
 import com.example.modatlas.models.Mod;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.ModrinthResponse;
 import com.example.modatlas.models.RetrofitClient;
-import com.example.modatlas.models.urlString;
 import com.example.modatlas.views.ModItemAdapter;
 
 import java.util.ArrayList;
@@ -42,16 +39,19 @@ public class SearchActivity extends AppCompatActivity {
 
     private ModrinthApi api;
     private String query;
+    private String loader;
     private int currentPage;
     private List<Mod> mod;
     private RecyclerView modItems;
     private FragmentManager fragmentManager;
     private TextView openFilter;
-    private String searchId;
+    private static String searchId;
+    private String facet;
     private boolean isLoading;
     private boolean isLastPage;
     private final int pageSize = 20;
     private boolean isFilterOpen;
+    private FilterTable filterTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,9 @@ public class SearchActivity extends AppCompatActivity {
         });
 
         this.init();
-
+        filterTable.getSelectedVersions().observe(this, state ->{
+            Log.i("test","saved tag: "+ state);
+        });
     }
 
     private void init(){
@@ -74,31 +76,20 @@ public class SearchActivity extends AppCompatActivity {
         this.isLoading = false;
         this.isLastPage = false;
         this.isFilterOpen = false;
+        this.loader = "";
         this.mod = new ArrayList<>();
+        this.filterTable = new ViewModelProvider(this).get(FilterTable.class);
         Intent intent = getIntent();
         this.fragmentManager = getSupportFragmentManager();
         this.openFilter = findViewById(R.id.openFilter);
-        this.searchId = urlString.getProjectType( intent.getStringExtra("id"));
+        URLString.setProjectType(intent.getStringExtra("id"));
+        this.searchId = URLString.facet;
+        Log.i("test",this.searchId);
+        this.facet = URLString.facet;
         this.api = RetrofitClient.getApi();
         this.modItems = findViewById(R.id.mod_items);
         this.modItems.setLayoutManager(new LinearLayoutManager(this));
-        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,this.searchId).enqueue(new Callback<ModrinthResponse>() {
-            @Override
-            public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
-                if (response.body() != null) {
-                    mod = response.body().getHits();
-                    // Now that we have the data, update the RecyclerView
-                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod));
-                } else {
-                    Log.e("test", "Response body is null");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ModrinthResponse> call, Throwable t) {
-                Log.e("test", "API call failed: " + t.getMessage());
-            }
-        });
+        this.getMods();
 
         this.initListener();
     }
@@ -135,8 +126,46 @@ public class SearchActivity extends AppCompatActivity {
                     popFilterFragment();
                     openFilter.setText("open filter");
                     isFilterOpen = false;
+//                    filterTable.getVersionAt(0);
+                    List<String> tag = filterTable.getSelectedVersions().getValue();
+                    URLString.setProjectType(searchId);
+                    URLString.resetLoader();
+                    for (String s:tag) {
+                        URLString.addFacet(s);
+                        facet = URLString.facet;
+                        loader = URLString.loader;
+                        getMods();
+                        Log.i("test",s);
+                    }
+                    Log.i("test",facet);
+                    Log.i("test",loader);
+                    if (tag != null) {
+                        Log.i("test", "Selected versions: " + tag.toString());
+                    } else {
+                        Log.i("test", "Selected versions: null");
+                    }
                 }
 
+            }
+        });
+    }
+
+    private void getMods(){
+        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,this.facet,this.loader).enqueue(new Callback<ModrinthResponse>() {
+            @Override
+            public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
+                if (response.body() != null) {
+                    mod = response.body().getHits();
+                    // Now that we have the data, update the RecyclerView
+                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod));
+                } else {
+                    Log.e("test", "Response body is null");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModrinthResponse> call, Throwable t) {
+                Log.e("test", "API call failed: " + t.getMessage());
             }
         });
     }
@@ -145,7 +174,7 @@ public class SearchActivity extends AppCompatActivity {
         isLoading = true;
         currentPage++;
 
-        api.searchFacetMod(query, pageSize, currentPage * pageSize, this.searchId)
+        api.searchFacetMod(query, pageSize, currentPage * pageSize, this.facet,this.loader)
                 .enqueue(new Callback<ModrinthResponse>() {
                     @Override
                     public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
@@ -176,26 +205,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void replaceFilterFragment(){
-        Fragment f = new ModFilterFragment();
-        switch (this.searchId){
-            case urlString.allDataPack:
-                f = new DataPackFilterFragment();
-                break;
-            case urlString.allModPack:
-                f = new ModPackFilterFragment();
-                break;
-            case urlString.allPlugin:
-                f = new PluginFilterFragment();
-                break;
-            case urlString.allShader:
-                f = new ShaderFilterFragment();
-                break;
-            case urlString.allResourcePack:
-                f = new ResourcePackFilterFragment();
-                break;
-            default:
-                break;
-        }
+        Fragment f = FilterFragment.newInstance(searchId);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fillter,f);
         transaction.addToBackStack(null);
@@ -203,6 +213,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void popFilterFragment(){
-        fragmentManager.popBackStack();
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }

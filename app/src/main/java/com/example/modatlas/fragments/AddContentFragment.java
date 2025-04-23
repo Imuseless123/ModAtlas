@@ -27,6 +27,7 @@ import com.example.modatlas.models.ModrinthResponse;
 import com.example.modatlas.models.RetrofitClient;
 import com.example.modatlas.viewmodels.ModpackViewModel;
 import com.example.modatlas.views.AddContentEntryAdapter;
+import com.example.modatlas.views.LoadState;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -205,6 +206,9 @@ public class AddContentFragment extends Fragment {
                                 // Use this file (e.g., download or store its URL)
 //                                String downloadUrl = file.getUrl();
                                 modpackViewModel.addModFile(file);
+                                // Update state to "Imported"
+                                mod.setImportState(LoadState.DONE);
+                                adapter.notifyItemChanged(modList.indexOf(mod));
                                 return; // Stop searching after finding the first valid file
                             }
                         }
@@ -212,12 +216,18 @@ public class AddContentFragment extends Fragment {
                     Log.e("AddContentEntryView", "No matching file found for loader: " + loader + " and version: " + version);
                 } else {
                     Log.e("AddContentEntryView", "Failed to fetch versions: " + response.message());
+                    // Update state to "Import"
+                    mod.setImportState(LoadState.READY);
+                    adapter.notifyItemChanged(modList.indexOf(mod));
                 }
             }
 
             @Override
             public void onFailure(Call<List<ModVersion>> call, Throwable t) {
                 Log.e("AddContentEntryView", "Error fetching versions: " + t.getMessage());
+                // Update state to "Imported"
+                mod.setImportState(LoadState.READY);
+                adapter.notifyItemChanged(modList.indexOf(mod));
             }
         });
     }

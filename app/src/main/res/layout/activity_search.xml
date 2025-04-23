@@ -1,40 +1,46 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchActivity"
-    android:orientation="vertical">
+    tools:context=".SearchActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <LinearLayout
+        android:id="@+id/scoll"
+        android:orientation="vertical"
+        android:layout_weight="0.85">
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/scoll"
-            android:orientation="vertical"
-            android:layout_weight="0.85">
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/mod_items"/>
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Open fillter"
-            android:textAlignment="center"
-            android:id="@+id/openFilter"/>
+            android:id="@+id/mod_items"/>
     </LinearLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/fillter"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <FrameLayout
+            android:id="@+id/fillter"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.8"
+            android:layout_alignParentTop="true"
+            />
+        <TextView
+            android:id="@+id/openFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open filter"
+            android:textAlignment="center"
+            android:textColor="@color/on_surface"
+            android:layout_alignParentBottom="true"
+            android:background="@color/background"/>
+
+    </LinearLayout>
+
+
 
 </RelativeLayout>

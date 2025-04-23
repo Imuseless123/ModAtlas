@@ -22,7 +22,8 @@ public interface ModrinthApi {
             @Query("query") String query,
             @Query("limit") int limit,
             @Query("offset") int offset,
-            @Query("facets") String facets  // Pass facets as a query parameter
+            @Query("facets") String facets,  // Pass facets as a query parameter
+            @Query("loader") String loader
     );
     @GET("project/{slug}/version")
     Call<List<ModVersion>> getModVersions(@Path("slug") String slug);
@@ -33,4 +34,10 @@ public interface ModrinthApi {
     Call<List<Mod>> getModsByProjectIds(@Query("ids") String ids);
     @GET("versions")
     Call<List<ModVersion>> getModVersionsById(@Query("ids") String ids);
+    @GET("tag/game_version")
+    Call<List<GameVersion>> getGameVersion();
+    @GET("tag/loader")
+    Call<List<Loader>> getLoader();
+    @GET("tag/category")
+    Call<List<Category>> getCategory();
 }

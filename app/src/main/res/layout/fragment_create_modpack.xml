@@ -31,7 +31,8 @@
                 android:paddingTop="32dp"
                 android:inputType="text"
                 android:textColor="@color/on_surface"
-                android:textColorHint="@color/gray_400"/>
+                android:textColorHint="@color/gray_400"
+                />
             <Spinner
                 android:id="@+id/spinnerLoader"
                 android:layout_width="match_parent"

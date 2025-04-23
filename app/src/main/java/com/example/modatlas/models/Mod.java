@@ -1,5 +1,6 @@
 package com.example.modatlas.models;
 
+import com.example.modatlas.views.LoadState;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
@@ -36,6 +37,16 @@ public class Mod {
     @SerializedName("server_side")
     private String serverSide;
 
+    private LoadState importState = LoadState.READY; // Default state
+
+    // Add a getter and setter for importState
+    public LoadState getImportState() {
+        return importState;
+    }
+
+    public void setImportState(LoadState importState) {
+        this.importState = importState;
+    }
     // Getters
     public String getProjectId() { return projectId; }
     public String getSlug() { return slug; }
