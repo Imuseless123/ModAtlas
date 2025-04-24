@@ -82,7 +82,7 @@ public class URLString {
     public static void addFacet(String value){
         if (value.contains("versions")){
             addVersion(value);
-        } else if (value.contains("categories") || value.contains("resolutions") || value.contains("features")) {
+        } else if (value.contains("categories") || value.contains("resolutions") || value.contains("features") || value.contains("performance impact")) {
             addCategory(value);
         } else if (value.contains("loader")) {
             addLoader(value);
