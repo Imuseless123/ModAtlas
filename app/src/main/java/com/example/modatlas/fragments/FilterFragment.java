@@ -23,6 +23,7 @@ import com.example.modatlas.models.GameVersionCallback;
 import com.example.modatlas.models.Loader;
 import com.example.modatlas.models.LoaderCallback;
 import com.example.modatlas.models.ModFilter;
+import com.example.modatlas.models.ModPackFilter;
 import com.example.modatlas.models.ResourcePackFilter;
 import com.example.modatlas.models.ShaderFilter;
 import com.example.modatlas.models.URLString;
@@ -90,7 +91,8 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             Log.i("test","set up data pack filter");
             this.filterManager = new DataPackFilter();
         } else if (this.filterId.equals(URLString.modPackId)) {
-            
+            Log.i("test","set up mod pack filter");
+            this.filterManager = new ModPackFilter();
         } else if (this.filterId.equals(URLString.pluginId)) {
             
         } else if (this.filterId.equals(URLString.resourcePackId)) {
@@ -146,6 +148,10 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                     for (Category c:((ShaderFilter)filterManager).getPerformanceImpact()) {
                         tes.add(new FilterTag(c.getName(),"performance impact"));
                     }
+                } else if (filterId.equals(URLString.modPackId)) {
+                    for (Category c:((ModPackFilter)filterManager).getMainCategory()) {
+                        tes.add(new FilterTag(c.getName(),"categories"));
+                    }
                 }
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
@@ -177,7 +183,7 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
     }
 
     private void addLoaderFilter() {
-        if (this.filterId.equals(URLString.modId) || this.filterId.equals(URLString.shaderId)) {
+        if (this.filterId.equals(URLString.modId) || this.filterId.equals(URLString.shaderId) || this.filterId.equals(URLString.modPackId)) {
             filterManager.setLoader(new LoaderCallback() {
                 @Override
                 public void onLoadersLoaded(List<Loader> loaders) {
@@ -188,6 +194,10 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                         }
                     } else if (filterId.equals(URLString.shaderId)) {
                         for (Loader l : ((ShaderFilter) filterManager).getMainLoader()) {
+                            tes.add(new FilterTag(l.getName(), "loader"));
+                        }
+                    } else if (filterId.equals(URLString.modPackId)) {
+                        for (Loader l : ((ModPackFilter) filterManager).getMainLoader()) {
                             tes.add(new FilterTag(l.getName(), "loader"));
                         }
                     }
@@ -205,9 +215,7 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
 
     private void addFilterSection(){
         addCategoryFilter();
-        if (this.filterId.equals(URLString.modId)){
-            addLoaderFilter();
-        }
+        addLoaderFilter();
         addVersionFilter();
     }
 
@@ -291,6 +299,11 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                 tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
                 headerPosition++;
             }
+        } else if (this.filterId.equals(URLString.modPackId)) {
+            for (Category c: ((ModPackFilter)filterManager).getMainCategory()) {
+                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
+                headerPosition++;
+            }
         }
     }
 
@@ -302,6 +315,11 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             }
         } else if (this.filterId.equals(URLString.shaderId)) {
             for (Loader l:((ShaderFilter)filterManager).getMainLoader()) {
+                tes.add(headerPosition + 1, new FilterTag(l.getName(),header));
+                headerPosition++;
+            }
+        } else if (this.filterId.equals(URLString.modPackId)) {
+            for (Loader l:((ModPackFilter)filterManager).getMainLoader()) {
                 tes.add(headerPosition + 1, new FilterTag(l.getName(),header));
                 headerPosition++;
             }
