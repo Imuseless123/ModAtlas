@@ -68,9 +68,8 @@ public class URLString {
 
     public static void addCategory(String category){
         if (containsColon(category)){
-            insertIntoFacet("[\""+category+"\"]");
-        } else{
-            insertIntoFacet("[\"categories:"+category+"\"]");
+            String temp = category.substring(category.indexOf(":") + 1).trim();
+            insertIntoFacet("[\"categories:"+temp+"\"]");
         }
     }
 
@@ -83,7 +82,7 @@ public class URLString {
     public static void addFacet(String value){
         if (value.contains("versions")){
             addVersion(value);
-        } else if (value.contains("categories")) {
+        } else if (value.contains("categories") || value.contains("resolutions") || value.contains("features") || value.contains("performance impact")) {
             addCategory(value);
         } else if (value.contains("loader")) {
             addLoader(value);

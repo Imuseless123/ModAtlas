@@ -94,6 +94,10 @@ public class FilterManager {
         return loader;
     }
 
+    public String getName() {
+        return name;
+    }
+
     protected void filterCategory(){}
     protected void filterLoader(){}
 }

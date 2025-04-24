@@ -1,16 +1,14 @@
 package com.example.modatlas.models;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModFilter extends FilterManager{
+public class PluginFilter extends FilterManager{
     private List<Category> mainCategory = new ArrayList<>();
     private List<Loader> mainLoader = new ArrayList<>();
-    public ModFilter() {
+    public PluginFilter() {
         super();
-        name = "mod";
+        name = "plugin";
     }
 
     private void setMainCategory(){
@@ -23,7 +21,7 @@ public class ModFilter extends FilterManager{
 
     private void setMainLoader(){
         for (Loader l:loader) {
-            if(l.getSupportedProjectTypes().contains("mod")){
+            if(l.getSupportedProjectTypes().contains("plugin")){
                 mainLoader.add(l);
             }
         }
