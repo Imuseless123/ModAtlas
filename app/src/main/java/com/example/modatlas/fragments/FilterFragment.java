@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.example.modatlas.R;
 import com.example.modatlas.models.Category;
 import com.example.modatlas.models.CategoryCallback;
+import com.example.modatlas.models.DataPackFilter;
 import com.example.modatlas.models.FilterHeader;
 import com.example.modatlas.models.FilterItem;
 import com.example.modatlas.models.FilterManager;
@@ -85,7 +86,8 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             Log.i("test","set up mod filter");
             this.filterManager = new ModFilter();
         } else if (this.filterId.equals(URLString.dataPackId)) {
-            
+            Log.i("test","set up data pack filter");
+            this.filterManager = new DataPackFilter();
         } else if (this.filterId.equals(URLString.modPackId)) {
             
         } else if (this.filterId.equals(URLString.pluginId)) {
@@ -125,6 +127,10 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                     tes.add(new FilterHeader("resolutions"));
                     for (Category c:((ResourcePackFilter)filterManager).getResolution()) {
                         tes.add(new FilterTag(c.getName(),"resolutions"));
+                    }
+                } else if (filterId.equals(URLString.dataPackId)) {
+                    for (Category c:((DataPackFilter)filterManager).getMainCategory()) {
+                        tes.add(new FilterTag(c.getName(),"categories"));
                     }
                 }
                 recyclerView.getAdapter().notifyDataSetChanged();
@@ -240,6 +246,11 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
     private void recoverCategoryFilter(String header, Integer headerPosition){
         if (this.filterId.equals(URLString.modId)){
             for (Category c: ((ModFilter)filterManager).getMainCategory()) {
+                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
+                headerPosition++;
+            }
+        } else if (this.filterId.equals(URLString.dataPackId)) {
+            for (Category c: ((DataPackFilter)filterManager).getMainCategory()) {
                 tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
                 headerPosition++;
             }
