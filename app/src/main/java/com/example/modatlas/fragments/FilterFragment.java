@@ -22,6 +22,7 @@ import com.example.modatlas.models.GameVersionCallback;
 import com.example.modatlas.models.Loader;
 import com.example.modatlas.models.LoaderCallback;
 import com.example.modatlas.models.ModFilter;
+import com.example.modatlas.models.ResourcePackFilter;
 import com.example.modatlas.models.URLString;
 import com.example.modatlas.viewmodels.FilterTable;
 import com.example.modatlas.models.FilterTag;
@@ -83,7 +84,19 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
         if (this.filterId.equals(URLString.modId)){
             Log.i("test","set up mod filter");
             this.filterManager = new ModFilter();
+        } else if (this.filterId.equals(URLString.dataPackId)) {
+            
+        } else if (this.filterId.equals(URLString.modPackId)) {
+            
+        } else if (this.filterId.equals(URLString.pluginId)) {
+            
+        } else if (this.filterId.equals(URLString.resourcePackId)) {
+            Log.i("test","set up resource pack filter");
+            this.filterManager = new ResourcePackFilter();
+        } else if (this.filterId.equals(URLString.shaderId)) {
+            
         }
+
         filterAdapter = new FilterAdapter(getContext(),tes, FilterFragment.this);
         recyclerView.setAdapter(filterAdapter);
         addFilterSection();
@@ -101,7 +114,18 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                     for (Category c:((ModFilter)filterManager).getMainCategory()) {
                         tes.add(new FilterTag(c.getName(),"categories"));
                     }
-//                    Log.i("test",((ModFilter)filterManager).getMainCategory().toString());
+                } else if (filterId.equals(URLString.resourcePackId)) {
+                    for (Category c:((ResourcePackFilter)filterManager).getMainCategory()) {
+                        tes.add(new FilterTag(c.getName(),"categories"));
+                    }
+                    tes.add(new FilterHeader("features"));
+                    for (Category c:((ResourcePackFilter)filterManager).getFeature()) {
+                        tes.add(new FilterTag(c.getName(),"features"));
+                    }
+                    tes.add(new FilterHeader("resolutions"));
+                    for (Category c:((ResourcePackFilter)filterManager).getResolution()) {
+                        tes.add(new FilterTag(c.getName(),"resolutions"));
+                    }
                 }
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
@@ -170,13 +194,25 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
 
     private void removeCategoryFilter(){
         for (Category c: filterManager.getCategoryList()) {
-            tes.removeIf(item -> item.getItemName().equals(c.getName()));
+            tes.removeIf(item -> item.getItemName().equals(c.getName()) && item.getHeader().equals("categories"));
         }
     }
 
     private void removeLoaderFilter(){
         for (Loader l: filterManager.getLoader()) {
             tes.removeIf(item -> item.getItemName().equals(l.getName()));
+        }
+    }
+
+    private void removeFeatureFilter(){
+        for (Category c: filterManager.getCategoryList()) {
+            tes.removeIf(item -> item.getItemName().equals(c.getName()) && item.getHeader().equals("features"));
+        }
+    }
+
+    private void removeResolutionFilter(){
+        for (Category c: filterManager.getCategoryList()) {
+            tes.removeIf(item -> item.getItemName().equals(c.getName()) && item.getHeader().equals("resolutions"));
         }
     }
 
@@ -187,6 +223,10 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             removeCategoryFilter();
         } else if (header.equals("loader")) {
             removeLoaderFilter();
+        } else if (header.equals("features")) {
+            removeFeatureFilter();
+        } else if (header.equals("resolutions")) {
+            removeResolutionFilter();
         }
     }
 
@@ -215,6 +255,24 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
         }
     }
 
+    private void recoverFeatureFilter(String header, Integer headerPosition){
+        if (this.filterId.equals(URLString.resourcePackId)){
+            for (Category c:((ResourcePackFilter)filterManager).getFeature()) {
+                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
+                headerPosition++;
+            }
+        }
+    }
+
+    private void recoverResolutionFilter(String header, Integer headerPosition){
+        if (this.filterId.equals(URLString.resourcePackId)){
+            for (Category c:((ResourcePackFilter)filterManager).getResolution()) {
+                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
+                headerPosition++;
+            }
+        }
+    }
+
     private void recoverFilterSection(String header, Integer headerPosition){
         if (header.equals("versions")){
             recoverVersionFilter(header,headerPosition);
@@ -222,6 +280,10 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             recoverCategoryFilter(header,headerPosition);
         } else if (header.equals("loader")) {
             recoverLoaderFilter(header,headerPosition);
+        } else if (header.equals("features")) {
+            recoverFeatureFilter(header,headerPosition);
+        } else if (header.equals("resolutions")) {
+            recoverResolutionFilter(header,headerPosition);
         }
     }
 

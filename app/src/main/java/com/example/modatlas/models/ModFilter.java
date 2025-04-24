@@ -16,7 +16,6 @@ public class ModFilter extends FilterManager{
     private void setMainCategory(){
         for (Category c:this.categoryList) {
             if(c.getHeader().equals("categories") && c.getProjectType().equals("mod")){
-//                Log.i("test",c.getName());
                 mainCategory.add(c);
             }
         }
@@ -46,9 +45,5 @@ public class ModFilter extends FilterManager{
 
     public List<Loader> getMainLoader() {
         return mainLoader;
-    }
-
-    public String getName() {
-        return name;
     }
 }
