@@ -40,4 +40,6 @@ public interface ModrinthApi {
     Call<List<Loader>> getLoader();
     @GET("tag/category")
     Call<List<Category>> getCategory();
+    @GET("project/{id}")
+    Call<Project> getProjectById(@Path("id") String id);
 }

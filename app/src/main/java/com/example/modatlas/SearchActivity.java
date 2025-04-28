@@ -175,7 +175,7 @@ public class SearchActivity extends AppCompatActivity {
                     modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod, i -> {
                         // This is where you handle the click
 //                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
-                        replaceDetailFragment();
+                        replaceDetailFragment(i.getProjectId());
                         close.setVisibility(VISIBLE);
                         // You could also start a new activity or show a dialog here
                     }));
@@ -207,7 +207,7 @@ public class SearchActivity extends AppCompatActivity {
                                     modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod, i->{
                                         // This is where you handle the click
 //                                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
-                                        replaceDetailFragment();
+                                        replaceDetailFragment(i.getProjectId());
                                         close.setVisibility(VISIBLE);
                                         // You could also start a new activity or show a dialog here
                                     }));
@@ -239,8 +239,8 @@ public class SearchActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    private void replaceDetailFragment(){
-        Fragment f = DetailsFragment.newInstance();
+    private void replaceDetailFragment(String projectId){
+        Fragment f = DetailsFragment.newInstance(projectId);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.details,f);
         transaction.addToBackStack(null);
