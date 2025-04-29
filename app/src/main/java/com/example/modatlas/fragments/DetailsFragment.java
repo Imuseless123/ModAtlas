@@ -5,6 +5,7 @@ import static android.view.View.VISIBLE;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.Project;
 import com.example.modatlas.models.ProjectVersion;
 import com.example.modatlas.models.RetrofitClient;
+import com.example.modatlas.views.ProjectVersionAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ public class DetailsFragment extends Fragment {
     private RecyclerView projectVersionList;
     private ModrinthApi api;
     private List<ProjectVersion> projectVersion = new ArrayList<>();
+    private ProjectVersionAdapter projectVersionAdapter;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -70,8 +73,13 @@ public class DetailsFragment extends Fragment {
         api = RetrofitClient.getApi();
         change = view.findViewById(R.id.change);
         projectVersionList = view.findViewById(R.id.modVersionList);
+        projectVersionList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        projectVersionAdapter = new ProjectVersionAdapter(projectVersion);
+        projectVersionList.setAdapter(projectVersionAdapter);
         initListener();
         getProject();
+        getProjectVersion();
 
         return view;
     }
@@ -120,6 +128,7 @@ public class DetailsFragment extends Fragment {
                     public void onResponse(Call<List<ProjectVersion>> call, Response<List<ProjectVersion>> response) {
                         if (response.body() != null) {
                             projectVersion.addAll(response.body());
+                            projectVersionList.getAdapter().notifyDataSetChanged();
                         } else {
                             Log.e("test", "Response body is null");
                         }

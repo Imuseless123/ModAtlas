@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginTop="10dp">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/modVersions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1.9.7"
-            android:layout_marginRight="50dp"/>
-        <TextView
-            android:id="@+id/gameVersions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1.21.5"
-            android:layout_marginRight="50dp"/>
-        <TextView
-            android:id="@+id/Platforms"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="NeoForge"/>
-    </LinearLayout>
+    android:paddingTop="10dp"
+    android:paddingHorizontal="16dp">
+
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/modVersion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="1.9.7" />
+
+        <TextView
+            android:id="@+id/gameVersion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="1.21.5" />
+
+        <TextView
+            android:id="@+id/platform"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="NeoForge" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:id="@+id/seperator"
         android:layout_marginTop="10dp"
-        android:background="#DAD8D8"
-        android:orientation="horizontal"
-        android:layout_below="@+id/modImage"/>
+        android:background="#DAD8D8"/>
 </LinearLayout>
