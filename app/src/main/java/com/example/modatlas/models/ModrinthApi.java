@@ -42,4 +42,6 @@ public interface ModrinthApi {
     Call<List<Category>> getCategory();
     @GET("project/{id}")
     Call<Project> getProjectById(@Path("id") String id);
+    @GET("project/{id}/version")
+    Call<List<ProjectVersion>> getProjectVersionById(@Path("id") String id);
 }

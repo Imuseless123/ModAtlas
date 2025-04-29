@@ -1,17 +1,27 @@
 package com.example.modatlas.fragments;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.modatlas.R;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.Project;
+import com.example.modatlas.models.ProjectVersion;
 import com.example.modatlas.models.RetrofitClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.noties.markwon.Markwon;
 
@@ -23,11 +33,14 @@ import retrofit2.Response;
 public class DetailsFragment extends Fragment {
 
     private static final String ARG_PROJECT_ID = "param1";
-
+    private boolean isChange = false;
     private String mProjectId;
     private Project project;
     private TextView markdownTextView;
+    private Button change;
+    private RecyclerView projectVersionList;
     private ModrinthApi api;
+    private List<ProjectVersion> projectVersion = new ArrayList<>();
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -55,10 +68,29 @@ public class DetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         markdownTextView = view.findViewById(R.id.markdownText);
         api = RetrofitClient.getApi();
-
+        change = view.findViewById(R.id.change);
+        projectVersionList = view.findViewById(R.id.modVersionList);
+        initListener();
         getProject();
 
         return view;
+    }
+
+    private void initListener(){
+        change.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isChange){
+                    isChange = true;
+                    markdownTextView.setVisibility(INVISIBLE);
+                    projectVersionList.setVisibility(VISIBLE);
+                } else {
+                    isChange = false;
+                    projectVersionList.setVisibility(INVISIBLE);
+                    markdownTextView.setVisibility(VISIBLE);
+                }
+            }
+        });
     }
 
     private void getProject() {
@@ -70,13 +102,32 @@ public class DetailsFragment extends Fragment {
                             project = response.body();
                             setUpMarkDown(project.getBody());
                         } else {
-                            Log.e("DetailsFragment", "Response body is null");
+                            Log.e("test", "Response body is null");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Project> call, Throwable t) {
-                        Log.e("DetailsFragment", "API call failed: " + t.getMessage());
+                        Log.e("test", "API call failed: " + t.getMessage());
+                    }
+                });
+    }
+
+    private void getProjectVersion(){
+        api.getProjectVersionById(mProjectId)
+                .enqueue(new Callback<List<ProjectVersion>>() {
+                    @Override
+                    public void onResponse(Call<List<ProjectVersion>> call, Response<List<ProjectVersion>> response) {
+                        if (response.body() != null) {
+                            projectVersion.addAll(response.body());
+                        } else {
+                            Log.e("test", "Response body is null");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<ProjectVersion>> call, Throwable t) {
+                        Log.e("test", "API call failed: " + t.getMessage());
                     }
                 });
     }

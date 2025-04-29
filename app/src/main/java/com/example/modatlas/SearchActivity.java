@@ -88,7 +88,7 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         this.fragmentManager = getSupportFragmentManager();
         this.openFilter = findViewById(R.id.openFilter);
-        this.close = findViewById(R.id.close);
+        this.close = findViewById(R.id.closeDetail);
         URLString.setProjectType(intent.getStringExtra("id"));
         this.searchId = URLString.facet;
         Log.i("test",this.searchId);
