@@ -1,5 +1,8 @@
 package com.example.modatlas;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.modatlas.fragments.DetailsFragment;
 import com.example.modatlas.fragments.FilterFragment;
 import com.example.modatlas.models.URLString;
 import com.example.modatlas.viewmodels.FilterTable;
@@ -45,6 +49,7 @@ public class SearchActivity extends AppCompatActivity {
     private RecyclerView modItems;
     private FragmentManager fragmentManager;
     private TextView openFilter;
+    private TextView close;
     private static String searchId;
     private String facet;
     private boolean isLoading;
@@ -82,6 +87,7 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         this.fragmentManager = getSupportFragmentManager();
         this.openFilter = findViewById(R.id.openFilter);
+        this.close = findViewById(R.id.closeDetail);
         URLString.setProjectType(intent.getStringExtra("id"));
         this.searchId = URLString.facet;
         Log.i("test",this.searchId);
@@ -148,6 +154,14 @@ public class SearchActivity extends AppCompatActivity {
 
             }
         });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popFilterFragment();
+                close.setVisibility(INVISIBLE);
+            }
+        });
     }
 
     private void getMods(){
@@ -157,7 +171,13 @@ public class SearchActivity extends AppCompatActivity {
                 if (response.body() != null) {
                     mod = response.body().getHits();
                     // Now that we have the data, update the RecyclerView
-                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod));
+                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod, i -> {
+                        // This is where you handle the click
+//                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+                        replaceDetailFragment(i.getProjectId());
+                        close.setVisibility(VISIBLE);
+                        // You could also start a new activity or show a dialog here
+                    }));
                 } else {
                     Log.e("test", "Response body is null");
                 }
@@ -183,7 +203,13 @@ public class SearchActivity extends AppCompatActivity {
                             if (!newMods.isEmpty()) {
                                 mod.addAll(newMods);
                                 if (modItems.getAdapter() == null) {
-                                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod));
+                                    modItems.setAdapter(new ModItemAdapter(getApplicationContext(), mod, i->{
+                                        // This is where you handle the click
+//                                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+                                        replaceDetailFragment(i.getProjectId());
+                                        close.setVisibility(VISIBLE);
+                                        // You could also start a new activity or show a dialog here
+                                    }));
                                 } else {
                                     modItems.getAdapter().notifyDataSetChanged();
                                 }
@@ -208,6 +234,14 @@ public class SearchActivity extends AppCompatActivity {
         Fragment f = FilterFragment.newInstance(searchId);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fillter,f);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private void replaceDetailFragment(String projectId){
+        Fragment f = DetailsFragment.newInstance(projectId);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.details,f);
         transaction.addToBackStack(null);
         transaction.commit();
     }

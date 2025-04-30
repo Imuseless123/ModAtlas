@@ -2,17 +2,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp">
+    android:layout_marginTop="10dp"
+    android:background="@color/surface">
     <ImageView
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:id="@+id/modImage"/>
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:id="@+id/modTitle"
         android:text="Title"
         android:layout_toEndOf="@+id/modImage"
+        android:paddingStart="10dp"
+        android:textColor="@color/on_surface"
+        android:textSize="18dp"
+        android:ellipsize="end"
+        android:maxLines="1"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="By"
+        android:textColor="@color/on_surface"
+        android:layout_toEndOf="@+id/modImage"
+        android:layout_below="@+id/modTitle"
+        android:textSize="12dp"
         android:paddingStart="10dp"
         />
     <TextView
@@ -23,6 +37,9 @@
         android:layout_toEndOf="@+id/modImage"
         android:paddingStart="10dp"
         android:layout_below="@+id/modTitle"
+        android:textColor="@color/on_surface"
+        android:textSize="12dp"
+        android:layout_marginLeft="17dp"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -31,13 +48,20 @@
         android:text="download"
         android:layout_alignParentRight="true"
         android:paddingEnd="10dp"
+        android:textColor="@color/minor_text"
+        android:layout_marginRight="18dp"
         />
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/download_icon"
+        android:layout_alignParentEnd="true" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:id="@+id/seperator"
         android:layout_marginTop="10dp"
-        android:background="#DAD8D8"
+        android:background="@color/primary_variant"
         android:orientation="horizontal"
         android:layout_below="@+id/modImage"/>
 </RelativeLayout>
