@@ -53,7 +53,7 @@ public class SearchActivity extends AppCompatActivity {
     private ImageView openFilter;
     private EditText searchBar;
     private ImageView searchButton;
-    private TextView close;
+    private ImageView closeDetail;
     private static String searchId;
     private String facet;
     private boolean isLoading;
@@ -93,7 +93,7 @@ public class SearchActivity extends AppCompatActivity {
         this.openFilter = findViewById(R.id.openFilter);
         this.searchBar = findViewById(R.id.query);
         this.searchButton = findViewById(R.id.searchButton);
-        this.close = findViewById(R.id.closeDetail);
+        closeDetail = findViewById(R.id.close_detail);
         URLString.setProjectType(intent.getStringExtra("id"));
         this.searchId = URLString.facet;
         Log.i("test","search id: "+this.searchId);
@@ -171,11 +171,11 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        close.setOnClickListener(new View.OnClickListener() {
+        closeDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popFilterFragment();
-                close.setVisibility(INVISIBLE);
+                closeDetail.setVisibility(INVISIBLE);
             }
         });
 
@@ -199,7 +199,7 @@ public class SearchActivity extends AppCompatActivity {
                         // This is where you handle the click
 //                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
                         replaceDetailFragment(i.getProjectId());
-                        close.setVisibility(VISIBLE);
+                        closeDetail.setVisibility(VISIBLE);
                         // You could also start a new activity or show a dialog here
                     }));
 //                    modItems.getAdapter().notifyDataSetChanged();
@@ -232,7 +232,7 @@ public class SearchActivity extends AppCompatActivity {
                                         // This is where you handle the click
 //                                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
                                         replaceDetailFragment(i.getProjectId());
-                                        close.setVisibility(VISIBLE);
+                                        closeDetail.setVisibility(VISIBLE);
                                         // You could also start a new activity or show a dialog here
                                     }));
                                 } else {
