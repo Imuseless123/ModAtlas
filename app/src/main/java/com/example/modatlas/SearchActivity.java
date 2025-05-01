@@ -137,35 +137,7 @@ public class SearchActivity extends AppCompatActivity {
                     isFilterOpen = true;
                 } else {
                     popFilterFragment();
-                    searchButton.setVisibility(VISIBLE);
-//                    openFilter.setText("open filter");
-                    isFilterOpen = false;
-//                    filterTable.getVersionAt(0);
-                    List<String> tag = filterTable.getSelectedVersions().getValue();
-                    URLString.setProjectType(searchId);
-                    URLString.resetLoader();
-                    facet = "";
-                    loader = "";
-                    if (tag.isEmpty()){
-                        facet = URLString.facet;
-                        loader = URLString.loader;
-//                        getMods();
-                    } else {
-                        for (String s:tag) {
-                            URLString.addFacet(s);
-                            facet = URLString.facet;
-                            loader = URLString.loader;
-//                            getMods();
-                            Log.i("test","s: "+s);
-                        }
-                    }
-                    Log.i("test","facet: "+facet);
-                    Log.i("test","loader: "+loader);
-                    if (tag != null) {
-                        Log.i("test", "Selected versions: " + tag.toString());
-                    } else {
-                        Log.i("test", "Selected versions: null");
-                    }
+                    closeFilter();
                 }
 
             }
@@ -186,6 +158,47 @@ public class SearchActivity extends AppCompatActivity {
                 getMods();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Your custom back action
+        Log.i("Back", "Back pressed in Activity");
+        super.onBackPressed(); // Optional: call this to let the system handle the back press
+        closeFilter();
+        closeDetail.setVisibility(INVISIBLE);
+    }
+
+    private void closeFilter(){
+        searchButton.setVisibility(VISIBLE);
+//                    openFilter.setText("open filter");
+        isFilterOpen = false;
+//                    filterTable.getVersionAt(0);
+        List<String> tag = filterTable.getSelectedVersions().getValue();
+        URLString.setProjectType(searchId);
+        URLString.resetLoader();
+        facet = "";
+        loader = "";
+        if (tag.isEmpty()){
+            facet = URLString.facet;
+            loader = URLString.loader;
+//                        getMods();
+        } else {
+            for (String s:tag) {
+                URLString.addFacet(s);
+                facet = URLString.facet;
+                loader = URLString.loader;
+//                            getMods();
+                Log.i("test","s: "+s);
+            }
+        }
+        Log.i("test","facet: "+facet);
+        Log.i("test","loader: "+loader);
+        if (tag != null) {
+            Log.i("test", "Selected versions: " + tag.toString());
+        } else {
+            Log.i("test", "Selected versions: null");
+        }
     }
 
     private void getMods(){
