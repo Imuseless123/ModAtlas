@@ -36,6 +36,7 @@ import com.example.modatlas.models.RecyclerViewInterface;
 import com.example.modatlas.models.RetrofitClient;
 import com.example.modatlas.views.FilterAdapter;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,6 +160,11 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                         tes.add(new FilterTag(c.getName(),"categories"));
                     }
                 }
+                for (FilterItem i : tes) {
+                    if (filterTable.haveVersion(i.getHeader() + ":" + i.getItemName())) {
+                        i.setSelected(true);
+                    }
+                }
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
 
@@ -177,6 +183,11 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                 tes.add(new FilterHeader("versions"));
                 for (GameVersion v: gameVersions) {
                     tes.add(new FilterTag(v.getVersion(),"versions"));
+                }
+                for (FilterItem i : tes) {
+                    if (filterTable.haveVersion(i.getHeader() + ":" + i.getItemName())) {
+                        i.setSelected(true);
+                    }
                 }
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
@@ -209,6 +220,11 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
                     } else if (filterId.equals(URLString.pluginId)) {
                         for (Loader l : ((PluginFilter) filterManager).getMainLoader()) {
                             tes.add(new FilterTag(l.getName(), "loader"));
+                        }
+                    }
+                    for (FilterItem i : tes) {
+                        if (filterTable.haveVersion(i.getHeader() + ":" + i.getItemName())) {
+                            i.setSelected(true);
                         }
                     }
                     recyclerView.getAdapter().notifyDataSetChanged();
@@ -403,11 +419,19 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             header = tes.get(position).getHeader();
             Log.i( "test",selectedTag);
 
+            if (!tes.get(position).isSelected()){
+                tes.get(position).setSelected(true);
+//                tes.get(position);
+            } else {
+                tes.get(position).setSelected(false);
+            }
+
             if (!filterTable.haveVersion(header+":"+selectedTag)){
                 filterTable.addVersion(header+":"+selectedTag);
             } else {
                 filterTable.removeVersion(header+":"+selectedTag);
             }
+            recyclerView.getAdapter().notifyItemChanged(position);
         } else {
             Log.i("test",selectedTag);
             header = tes.get(position).getHeader();
@@ -416,8 +440,6 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
 //                Log.i("test",i.getItemName());
                 if (i.isTag() && (i.getHeader().equals(header))){
                     removeFilterSection(header);
-                    filterAdapter = new FilterAdapter(getContext(),tes, FilterFragment.this);
-                    recyclerView.setAdapter(filterAdapter);
                     recyclerView.getAdapter().notifyDataSetChanged();
                     matched = true;
                     break;
@@ -425,9 +447,6 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             }
             if (!matched) {
                 recoverFilterSection(header,headerPosition);
-
-                filterAdapter = new FilterAdapter(getContext(),tes, FilterFragment.this);
-                recyclerView.setAdapter(filterAdapter);
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         }

@@ -10,12 +10,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:text="filter tag"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <ImageView
         android:id="@+id/check_icon"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:visibility="gone"
-        android:src="@drawable/checkmark" />
+        android:visibility="invisible"
+        android:src="@drawable/checkmark"/>
 </LinearLayout>
