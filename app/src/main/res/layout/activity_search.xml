@@ -4,7 +4,11 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+    tools:context=".SearchActivity"
+    android:background="@color/background"
+    android:padding="4dp"
+
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/mod_items"
-            android:background="@color/surface"
+
             android:layout_marginTop="50dp"/>
     </LinearLayout>
 
@@ -23,35 +27,57 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+
         >
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:background="@color/surface"
-            android:gravity="center_vertical"
+            android:background="@drawable/rounded_bg"
             >
+
             <EditText
                 android:id="@+id/query"
-                android:layout_width="310dp"
+                android:layout_width="0dp"
                 android:layout_height="40dp"
-                android:layout_marginStart="10dp"
+                android:background="@null"
+                android:hint="Search..."
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
                 android:textColor="@color/on_surface"
-                />
-            <ImageView
-                android:id="@+id/searchButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/search_icon"
-                android:layout_marginStart="10dp"/>
-            <ImageView
-                android:id="@+id/openFilter"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/filter_icon"
+                android:textColorHint="@color/gray_400"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/searchButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginStart="10dp"/>
 
-        </LinearLayout>
+            <ImageButton
+                android:id="@+id/searchButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/surface"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:src="@android:drawable/ic_menu_search"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/openFilter"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="10dp"/>
+
+            <ImageButton
+                android:id="@+id/openFilter"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:src="@android:drawable/ic_menu_sort_by_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="10dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
         <FrameLayout
             android:id="@+id/fillter"
             android:layout_width="match_parent"

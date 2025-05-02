@@ -14,12 +14,15 @@ public class ModItemViewHolder extends RecyclerView.ViewHolder{
     TextView modTitle;
     TextView modAuthor;
     TextView modDownload;
+    TextView modDescription;
+
     public ModItemViewHolder(@NonNull View itemView) {
         super(itemView);
         modImage = itemView.findViewById(R.id.modImage);
         modTitle = itemView.findViewById(R.id.modTitle);
         modAuthor = itemView.findViewById(R.id.modAuthor);
         modDownload = itemView.findViewById(R.id.modDownload);
+        modDescription = itemView.findViewById(R.id.modDescription);
     }
 
 }

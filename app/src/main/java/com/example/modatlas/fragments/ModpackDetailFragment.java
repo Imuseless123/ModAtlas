@@ -1,8 +1,7 @@
 package com.example.modatlas.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
+
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -81,37 +80,8 @@ public class ModpackDetailFragment extends Fragment {
                 (tab, position) -> tab.setText(position == 0 ? "Mods" : "Data")
         ).attach();
 
-//        Button btnScanDependency = view.findViewById(R.id.btnScanDependency);
         TextView textView = view.findViewById(R.id.textModpackName);
-//        Button btnAddContent = view.findViewById(R.id.btnAddContent);
-//        TextView textJsonContent = view.findViewById(R.id.textJsonContent);
-//        Button btnDelete = view.findViewById(R.id.btnDeleteModpack);
-//        RecyclerView recyclerModFiles = view.findViewById(R.id.recyclerModFiles);
-//        Button btnExportModpack = view.findViewById(R.id.btnExportModpack);
-//        btnExportModpack.setOnClickListener(v -> {
-//            modpackViewModel.exportModpack(modpackName, requireActivity(), fileExportLauncher);
-//        });
-//        recyclerView = view.findViewById(R.id.recyclerView);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        adapter = new AddContentEntryAdapter(modList,null, mod -> {
-//            // Handle mod button click event
-//            onModButtonClick(mod);
-//        });
-//        recyclerView.setAdapter(adapter);
-//
-//        btnScanDependency.setOnClickListener(v -> {
-//            modpackViewModel.fetchRequiredDependencies();
-//        });
-//
-//        modpackViewModel.getDependencyModsLiveData().observe(getViewLifecycleOwner(), mods -> {
-//            modList.clear();
-//            modList.addAll(mods);
-//            adapter.notifyDataSetChanged();
-//        });
-//        // Set up RecyclerView
-//        recyclerModFiles.setLayoutManager(new LinearLayoutManager(getContext()));
-//        modFileAdapter = new ModFileAdapter(new ArrayList<>(), modFile -> modpackViewModel.removeModFile(modFile));
-//        recyclerModFiles.setAdapter(modFileAdapter);
+
 //
         if (getArguments() != null) {
             modpackName = getArguments().getString(ARG_MODPACK_NAME);
@@ -126,39 +96,12 @@ public class ModpackDetailFragment extends Fragment {
                 }
             });
 
-//            // Observe raw JSON text
-//            modpackViewModel.getRawJson().observe(getViewLifecycleOwner(), textJsonContent::setText);
-
-
         }
-//
-//        btnAddContent.setOnClickListener(v -> {
-//            getParentFragmentManager()
-//                    .beginTransaction()
-//                    .replace(android.R.id.content, AddContentFragment.newInstance(modpackViewModel.getModpack().getValue().getLoader(),modpackViewModel.getModpack().getValue().getMinecraftVersion())) // Replace with the new fragment
-//                    .addToBackStack(null) // Add to back stack to allow back navigation
-//                    .commit();
-//        });
-//        // Delete modpack button click
-//        btnDelete.setOnClickListener(v -> deleteModpack());
-//        btnScanDependency.setOnClickListener(v -> modpackViewModel.fetchRequiredDependencies());
-//
-//        fileExportLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-//            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-//                Uri uri = result.getData().getData();
-//                if (uri != null) {
-//                    modpackViewModel.handleExportResult(uri, requireContext(), new File(requireContext().getFilesDir(), "modpacks/" + modpackName + ".mrpack"));
-//                }
-//            }
-//        });
+
         return view;
     }
 
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        modpackViewModel.clearState(); // Call a function to reset ViewModel state
-//    }
+
     private void deleteModpack() {
         File modpackDir = new File(requireContext().getFilesDir(), "modpacks/" + modpackName);
 

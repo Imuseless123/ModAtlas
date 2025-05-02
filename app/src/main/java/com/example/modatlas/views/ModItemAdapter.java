@@ -43,6 +43,7 @@ public class ModItemAdapter extends RecyclerView.Adapter<ModItemViewHolder> {
         holder.modTitle.setText(mods.get(position).getTitle());
         holder.modAuthor.setText(mods.get(position).getAuthor());
         holder.modDownload.setText(String.valueOf(mods.get(position).getDownloads()));
+        holder.modDescription.setText(mods.get(position).getDescription());
         Glide.with(holder.itemView.getContext())
                 .load(mods.get(position).getIconUrl()) // Load image from URL
                 .into(holder.modImage); // Set image into ImageView
