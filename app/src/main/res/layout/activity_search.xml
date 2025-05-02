@@ -16,6 +16,7 @@
         android:orientation="vertical"
         android:layout_weight="0.85">
         <androidx.recyclerview.widget.RecyclerView
+            android:paddingTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/mod_items"
@@ -33,6 +34,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/rounded_bg"
+            android:layout_margin="8dp"
+
             >
 
             <EditText

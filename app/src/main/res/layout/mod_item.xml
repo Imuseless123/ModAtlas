@@ -9,94 +9,104 @@
     app:cardBackgroundColor="@android:color/transparent"
     app:cardElevation="2dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:background="@drawable/gradient_bg"
-        >
-
-        <ImageView
-            android:id="@+id/modImage"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_launcher_background"
-            android:background="@drawable/rounded_icon"/>
-
-        <TextView
-            android:id="@+id/modTitle"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/on_surface"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@+id/modImage"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Title" />
+            android:padding="4dp"
+            android:id="@+id/gradientLayout"
 
-        <TextView
-            android:id="@+id/modAuthorLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="By"
-            android:textColor="@color/on_surface"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@+id/modImage"
-            app:layout_constraintTop_toBottomOf="@+id/modTitle" />
+            >
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/rounded_bg"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/modAuthor"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:textColor="@color/on_surface"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@+id/modAuthorLabel"
-            app:layout_constraintTop_toBottomOf="@+id/modTitle"
-            tools:text="author" />
+            <ImageView
+                android:id="@+id/modImage"
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:padding="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/ic_launcher_background"
+                android:background="@drawable/rounded_icon"/>
 
-        <TextView
-            android:id="@+id/modDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textColor="@color/gray_400"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/modImage"
-            app:layout_constraintTop_toBottomOf="@+id/modAuthorLabel"
-            tools:text="Description" />
+            <TextView
+                android:id="@+id/modTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/on_surface"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingTop="8dp"
+                app:layout_constraintStart_toEndOf="@+id/modImage"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Title" />
 
-        <ImageView
-            android:id="@+id/downloadIcon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/sharp_arrow_downward_24"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/modDownload"
-            app:tint="@color/white"/>
+            <TextView
+                android:id="@+id/modAuthorLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="By"
+                android:textColor="@color/on_surface"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/modImage"
+                app:layout_constraintTop_toBottomOf="@+id/modTitle" />
 
-        <TextView
-            android:id="@+id/modDownload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/minor_text"
-            android:textSize="14sp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="download" />
+            <TextView
+                android:id="@+id/modAuthor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/on_surface"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/modAuthorLabel"
+                app:layout_constraintTop_toBottomOf="@+id/modTitle"
+                tools:text="author" />
+
+            <TextView
+                android:id="@+id/modDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/gray_400"
+                android:textSize="14sp"
+                android:paddingBottom="8dp"
+                android:paddingRight="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/modImage"
+                app:layout_constraintTop_toBottomOf="@+id/modAuthorLabel"
+                tools:text="Description" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/modDownload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/minor_text"
+                android:textSize="14sp"
+                android:paddingTop="8dp"
+                android:paddingRight="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="download" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </androidx.cardview.widget.CardView>

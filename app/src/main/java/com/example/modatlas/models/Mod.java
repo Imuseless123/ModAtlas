@@ -36,6 +36,8 @@ public class Mod {
 
     @SerializedName("server_side")
     private String serverSide;
+    @SerializedName("color")
+    private int color;
 
     private LoadState importState = LoadState.READY; // Default state
 
@@ -59,4 +61,5 @@ public class Mod {
     public String getIconUrl() { return iconUrl; }
     public String getClientSide() { return clientSide; }
     public String getServerSide() { return serverSide; }
+    public int getColor() { return color; }
 }
