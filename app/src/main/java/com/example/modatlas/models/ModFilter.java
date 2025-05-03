@@ -23,7 +23,7 @@ public class ModFilter extends FilterManager{
 
     private void setMainLoader(){
         for (Loader l:loader) {
-            if(l.getSupportedProjectTypes().contains("mod")){
+            if(l.getSupportedProjectTypes().contains("mod") && !l.getSupportedProjectTypes().contains("plugin") && !l.getSupportedProjectTypes().contains("datapack")){
                 mainLoader.add(l);
             }
         }
