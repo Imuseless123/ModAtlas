@@ -184,13 +184,13 @@ public class SearchActivity extends AppCompatActivity {
         if (tag.isEmpty()){
             facet = URLString.facet;
             loader = URLString.loader;
-//                        getMods();
+            getMods();
         } else {
             for (String s:tag) {
                 URLString.addFacet(s);
                 facet = URLString.facet;
                 loader = URLString.loader;
-//                            getMods();
+                getMods();
                 Log.i("test","s: "+s);
             }
         }
