@@ -7,8 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -87,14 +89,18 @@ public class OrbitMenuView extends View {
 
         }
 
-        // Draw the index of the bottom-most item in the center
+        // Draw the name of the bottom-most item in the center
         if (bottomItemIndex != -1) {
             Paint textPaint = new Paint();
             textPaint.setColor(getResources().getColor(R. color. gray_400));
             textPaint.setTextSize(80);
             textPaint.setTextAlign(Paint.Align.CENTER);
             textPaint.setTypeface((Typeface.create("sans-serif-black", Typeface.NORMAL))); // Rounded and modern
-            canvas.drawText(searchActivityList[bottomItemIndex-1], centerX, centerY, textPaint);
+            int[] colors = {getResources().getColor(R.color.primary), getResources().getColor(R.color.white)}; // Define your gradient colors
+            float[] positions = {0, 1}; // Define the color positions (0 = start, 1 = end)
+            LinearGradient gradient = new LinearGradient(centerX - 100, centerY, centerX + 100, centerY, colors, positions, Shader.TileMode.CLAMP);
+            textPaint.setShader(gradient);
+            canvas.drawText(searchActivityList[bottomItemIndex - 1], centerX, centerY, textPaint);
         }
     }
 

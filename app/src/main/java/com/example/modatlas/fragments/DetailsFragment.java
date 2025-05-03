@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.modatlas.R;
@@ -39,7 +40,7 @@ public class DetailsFragment extends Fragment {
     private String mProjectId;
     private Project project;
     private TextView markdownTextView;
-    private Button change;
+    private TextView change;
     private RecyclerView projectVersionList;
     private ModrinthApi api;
     private List<ProjectVersion> projectVersion = new ArrayList<>();
@@ -92,10 +93,12 @@ public class DetailsFragment extends Fragment {
                     isChange = true;
                     markdownTextView.setVisibility(INVISIBLE);
                     projectVersionList.setVisibility(VISIBLE);
+                    change.setText("Go to Description");
                 } else {
                     isChange = false;
                     projectVersionList.setVisibility(INVISIBLE);
                     markdownTextView.setVisibility(VISIBLE);
+                    change.setText("Go to Mod versions");
                 }
             }
         });

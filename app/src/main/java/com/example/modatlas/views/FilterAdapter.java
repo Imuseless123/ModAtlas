@@ -73,10 +73,8 @@ public class FilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             // Show checkmark if selected
             if (tag.isSelected()) {
                 itemHolder.checkIcon.setVisibility(View.VISIBLE);
-//                itemHolder.itemView.setBackgroundResource(R.drawable.selected_background);
             } else {
-                itemHolder.checkIcon.setVisibility(View.GONE);
-                itemHolder.itemView.setBackground(null);
+                itemHolder.checkIcon.setVisibility(View.INVISIBLE);
             }
 
         }
@@ -85,49 +83,5 @@ public class FilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public int getItemCount() {
         return filterList.size();
-    }
-
-    public static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        TextView filterHeader;
-        public HeaderViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
-            super(itemView);
-            filterHeader = itemView.findViewById(R.id.filter_header);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (recyclerViewInterface != null){
-                        int position = getAdapterPosition();
-
-                        if (position != RecyclerView.NO_POSITION){
-                            recyclerViewInterface.onItemClick(position);
-                        }
-                    }
-                }
-            });
-        }
-
-    }
-
-    public static class ItemViewHolder extends RecyclerView.ViewHolder {
-        TextView filterTag;
-        ImageView checkIcon;
-        FilterTable vm;
-        public ItemViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
-            super(itemView);
-            filterTag = itemView.findViewById(R.id.filter_tag);
-            checkIcon = itemView.findViewById(R.id.check_icon);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (recyclerViewInterface != null){
-                        int position = getAdapterPosition();
-
-                        if (position != RecyclerView.NO_POSITION){
-                            recyclerViewInterface.onItemClick(position);
-                        }
-                    }
-                }
-            });
-        }
     }
 }

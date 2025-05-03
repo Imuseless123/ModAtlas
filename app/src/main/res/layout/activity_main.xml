@@ -1,40 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical"
-    >
+    tools:context=".MainActivity">
 
-    <RelativeLayout
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ImageView
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/orbitMenuView"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/background" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnmrpack"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Explore "
+                android:textColor="@color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Minecraft"
+                android:textColor="@color/primary"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="5" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" Content"
+                android:textColor="@color/white"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/subtitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            app:cornerRadius="16dp"
-            android:backgroundTint="@color/primary"
-            android:textColor="@color/background"
-            android:layout_centerHorizontal="true"
-            android:text="mrpack" />
+            android:layout_marginTop="8dp"
+            android:text="Discover, play, and share mods, modpacks, and more!"
+            android:textColor="@color/gray_400"
+            android:textSize="16sp" />
+    </LinearLayout>
 
-        <com.example.modatlas.views.OrbitMenuView
-            android:layout_width="match_parent"
-            android:layout_height="256dp"
-            android:layout_centerInParent="true"/>
-    </RelativeLayout>
+    <com.example.modatlas.views.OrbitMenuView
+        android:id="@+id/orbitMenuView"
+        android:layout_width="match_parent"
+        android:layout_height="256dp"
+        android:layout_centerInParent="true" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnmrpack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/orbitMenuView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@color/primary"
+        android:text="Create Modpack"
+        android:textColor="@color/background"
+        app:cornerRadius="16dp" />
 
-
-
-</LinearLayout>
+</RelativeLayout>

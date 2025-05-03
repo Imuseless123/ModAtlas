@@ -1,15 +1,18 @@
 package com.example.modatlas;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -26,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(state,"onCreate");
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         String modpacksFolder = getString(R.string.modpacks_folder);
         createModpackFolder(modpacksFolder);
@@ -116,4 +118,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }

@@ -1,5 +1,6 @@
 package com.example.modatlas.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.example.modatlas.R;
 import com.example.modatlas.models.Mod;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class ModItemAdapter extends RecyclerView.Adapter<ModItemViewHolder> {
@@ -36,16 +38,20 @@ public class ModItemAdapter extends RecyclerView.Adapter<ModItemViewHolder> {
         return new ModItemViewHolder(LayoutInflater.from(context).inflate(R.layout.mod_item,parent,false));
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ModItemViewHolder holder, int position) {
         Mod currentMod = mods.get(position);
 
         holder.modTitle.setText(mods.get(position).getTitle());
         holder.modAuthor.setText(mods.get(position).getAuthor());
-        holder.modDownload.setText(String.valueOf(mods.get(position).getDownloads()));
+        holder.modDownload.setText(ModItemViewHolder.formatLargeNumber(mods.get(position).getDownloads())+" downloads");
+        holder.modDescription.setText(mods.get(position).getDescription());
         Glide.with(holder.itemView.getContext())
                 .load(mods.get(position).getIconUrl()) // Load image from URL
                 .into(holder.modImage); // Set image into ImageView
+        // Set the gradient background
+        holder.setGradientBackground(mods.get(position).getColor());
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(currentMod);
@@ -56,5 +62,12 @@ public class ModItemAdapter extends RecyclerView.Adapter<ModItemViewHolder> {
     @Override
     public int getItemCount() {
         return mods.size();
+    }
+    public static String formatLargeNumber(long count) {
+        if (count < 1000) return String.valueOf(count);
+        int exp = (int) (Math.log(count) / Math.log(1000));
+        DecimalFormat format = new DecimalFormat("0.#");
+        String value = format.format(count / Math.pow(1000, exp));
+        return String.format("%s%c", value, "KMGTPE".charAt(exp - 1));
     }
 }

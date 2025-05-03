@@ -4,14 +4,19 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -48,8 +53,10 @@ public class SearchActivity extends AppCompatActivity {
     private List<Mod> mod;
     private RecyclerView modItems;
     private FragmentManager fragmentManager;
-    private TextView openFilter;
-    private TextView close;
+    private ImageView openFilter;
+    private EditText searchBar;
+    private ImageView searchButton;
+    private ImageView closeDetail;
     private static String searchId;
     private String facet;
     private boolean isLoading;
@@ -61,7 +68,6 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_search);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -87,10 +93,12 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         this.fragmentManager = getSupportFragmentManager();
         this.openFilter = findViewById(R.id.openFilter);
-        this.close = findViewById(R.id.closeDetail);
+        this.searchBar = findViewById(R.id.query);
+        this.searchButton = findViewById(R.id.searchButton);
+        closeDetail = findViewById(R.id.close_detail);
         URLString.setProjectType(intent.getStringExtra("id"));
         this.searchId = URLString.facet;
-        Log.i("test",this.searchId);
+        Log.i("test","search id: "+this.searchId);
         this.facet = URLString.facet;
         this.api = RetrofitClient.getApi();
         this.modItems = findViewById(R.id.mod_items);
@@ -126,42 +134,73 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!isFilterOpen){
                     replaceFilterFragment();
-                    openFilter.setText("close filter");
+                    searchButton.setVisibility(INVISIBLE);
+//                    openFilter.setText("close filter");
                     isFilterOpen = true;
                 } else {
                     popFilterFragment();
-                    openFilter.setText("open filter");
-                    isFilterOpen = false;
-//                    filterTable.getVersionAt(0);
-                    List<String> tag = filterTable.getSelectedVersions().getValue();
-                    URLString.setProjectType(searchId);
-                    URLString.resetLoader();
-                    for (String s:tag) {
-                        URLString.addFacet(s);
-                        facet = URLString.facet;
-                        loader = URLString.loader;
-                        getMods();
-                        Log.i("test",s);
-                    }
-                    Log.i("test",facet);
-                    Log.i("test",loader);
-                    if (tag != null) {
-                        Log.i("test", "Selected versions: " + tag.toString());
-                    } else {
-                        Log.i("test", "Selected versions: null");
-                    }
+                    closeFilter();
                 }
 
             }
         });
 
-        close.setOnClickListener(new View.OnClickListener() {
+        closeDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popFilterFragment();
-                close.setVisibility(INVISIBLE);
+                closeDetail.setVisibility(INVISIBLE);
             }
         });
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                query = searchBar.getText().toString();
+                getMods();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Your custom back action
+        Log.i("Back", "Back pressed in Activity");
+        super.onBackPressed(); // Optional: call this to let the system handle the back press
+        closeFilter();
+        closeDetail.setVisibility(INVISIBLE);
+    }
+
+    private void closeFilter(){
+        searchButton.setVisibility(VISIBLE);
+//                    openFilter.setText("open filter");
+        isFilterOpen = false;
+//                    filterTable.getVersionAt(0);
+        List<String> tag = filterTable.getSelectedVersions().getValue();
+        URLString.setProjectType(searchId);
+        URLString.resetLoader();
+        facet = "";
+        loader = "";
+        if (tag.isEmpty()){
+            facet = URLString.facet;
+            loader = URLString.loader;
+//                        getMods();
+        } else {
+            for (String s:tag) {
+                URLString.addFacet(s);
+                facet = URLString.facet;
+                loader = URLString.loader;
+//                            getMods();
+                Log.i("test","s: "+s);
+            }
+        }
+        Log.i("test","facet: "+facet);
+        Log.i("test","loader: "+loader);
+        if (tag != null) {
+            Log.i("test", "Selected versions: " + tag.toString());
+        } else {
+            Log.i("test", "Selected versions: null");
+        }
     }
 
     private void getMods(){
@@ -175,9 +214,10 @@ public class SearchActivity extends AppCompatActivity {
                         // This is where you handle the click
 //                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
                         replaceDetailFragment(i.getProjectId());
-                        close.setVisibility(VISIBLE);
+                        closeDetail.setVisibility(VISIBLE);
                         // You could also start a new activity or show a dialog here
                     }));
+//                    modItems.getAdapter().notifyDataSetChanged();
                 } else {
                     Log.e("test", "Response body is null");
                 }
@@ -207,7 +247,7 @@ public class SearchActivity extends AppCompatActivity {
                                         // This is where you handle the click
 //                                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
                                         replaceDetailFragment(i.getProjectId());
-                                        close.setVisibility(VISIBLE);
+                                        closeDetail.setVisibility(VISIBLE);
                                         // You could also start a new activity or show a dialog here
                                     }));
                                 } else {
