@@ -47,7 +47,11 @@ public class FilterManager {
             public void onResponse(Call<List<GameVersion>> call, Response<List<GameVersion>> response) {
                 if (response.isSuccessful() && response.body() != null){
                     gameVersionList.clear();
-                    gameVersionList.addAll(response.body());
+                    for (GameVersion v: response.body()) {
+                        if (v.getVersionType().equals("release")){
+                            gameVersionList.add(v);
+                        }
+                    }
                     callback.onGameVersionsLoaded(gameVersionList);
                 } else {
                     callback.onError(new Exception("API returned empty or error"));

@@ -84,8 +84,7 @@
         <FrameLayout
             android:id="@+id/fillter"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.8"
+            android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             />
 
@@ -98,21 +97,10 @@
         <FrameLayout
             android:id="@+id/details"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.8"
-            android:layout_alignParentTop="true"/>
+            android:layout_height="match_parent"
+            />
 
 
     </LinearLayout>
-    <ImageView
-        android:id="@+id/close_detail"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:src="@drawable/close_icon"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:visibility="invisible"
-        />
 
 </RelativeLayout>

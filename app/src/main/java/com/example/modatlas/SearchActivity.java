@@ -56,7 +56,6 @@ public class SearchActivity extends AppCompatActivity {
     private ImageView openFilter;
     private EditText searchBar;
     private ImageView searchButton;
-    private ImageView closeDetail;
     private static String searchId;
     private String facet;
     private boolean isLoading;
@@ -95,7 +94,6 @@ public class SearchActivity extends AppCompatActivity {
         this.openFilter = findViewById(R.id.openFilter);
         this.searchBar = findViewById(R.id.query);
         this.searchButton = findViewById(R.id.searchButton);
-        closeDetail = findViewById(R.id.close_detail);
         URLString.setProjectType(intent.getStringExtra("id"));
         this.searchId = URLString.facet;
         Log.i("test","search id: "+this.searchId);
@@ -145,14 +143,6 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        closeDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popFilterFragment();
-                closeDetail.setVisibility(INVISIBLE);
-            }
-        });
-
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,7 +158,6 @@ public class SearchActivity extends AppCompatActivity {
         Log.i("Back", "Back pressed in Activity");
         super.onBackPressed(); // Optional: call this to let the system handle the back press
         closeFilter();
-        closeDetail.setVisibility(INVISIBLE);
     }
 
     private void closeFilter(){
@@ -184,13 +173,13 @@ public class SearchActivity extends AppCompatActivity {
         if (tag.isEmpty()){
             facet = URLString.facet;
             loader = URLString.loader;
-//                        getMods();
+            getMods();
         } else {
             for (String s:tag) {
                 URLString.addFacet(s);
                 facet = URLString.facet;
                 loader = URLString.loader;
-//                            getMods();
+                getMods();
                 Log.i("test","s: "+s);
             }
         }
@@ -204,7 +193,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void getMods(){
-        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,this.facet,this.loader).enqueue(new Callback<ModrinthResponse>() {
+        this.api.searchFacetMod(query, pageSize, currentPage * pageSize,URLString.facet,URLString.loader).enqueue(new Callback<ModrinthResponse>() {
             @Override
             public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
                 if (response.body() != null) {
@@ -214,10 +203,9 @@ public class SearchActivity extends AppCompatActivity {
                         // This is where you handle the click
 //                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
                         replaceDetailFragment(i.getProjectId());
-                        closeDetail.setVisibility(VISIBLE);
                         // You could also start a new activity or show a dialog here
                     }));
-//                    modItems.getAdapter().notifyDataSetChanged();
+                    modItems.getAdapter().notifyDataSetChanged();
                 } else {
                     Log.e("test", "Response body is null");
                 }
@@ -234,7 +222,7 @@ public class SearchActivity extends AppCompatActivity {
         isLoading = true;
         currentPage++;
 
-        api.searchFacetMod(query, pageSize, currentPage * pageSize, this.facet,this.loader)
+        api.searchFacetMod(query, pageSize, currentPage * pageSize, URLString.facet,URLString.loader)
                 .enqueue(new Callback<ModrinthResponse>() {
                     @Override
                     public void onResponse(Call<ModrinthResponse> call, Response<ModrinthResponse> response) {
@@ -247,7 +235,6 @@ public class SearchActivity extends AppCompatActivity {
                                         // This is where you handle the click
 //                                        Toast.makeText(SearchActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
                                         replaceDetailFragment(i.getProjectId());
-                                        closeDetail.setVisibility(VISIBLE);
                                         // You could also start a new activity or show a dialog here
                                     }));
                                 } else {
