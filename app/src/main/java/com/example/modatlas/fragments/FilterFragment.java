@@ -2,6 +2,7 @@ package com.example.modatlas.fragments;
 
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import com.example.modatlas.R;
 import com.example.modatlas.models.Category;
@@ -32,25 +34,27 @@ import com.example.modatlas.viewmodels.FilterTable;
 import com.example.modatlas.models.FilterTag;
 import com.example.modatlas.models.GameVersion;
 import com.example.modatlas.models.ModrinthApi;
-import com.example.modatlas.models.RecyclerViewInterface;
 import com.example.modatlas.models.RetrofitClient;
-import com.example.modatlas.views.FilterAdapter;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.tabs.TabLayout;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterFragment extends Fragment implements RecyclerViewInterface {
+public class FilterFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FILTER_ID = "param1";
     private String filterId;
-    private RecyclerView recyclerView;
-    private FilterAdapter filterAdapter;
     private ModrinthApi api;
-    private List<FilterItem> tes = new ArrayList<>();
+    private List<FilterItem> filterItemList = new ArrayList<>();
     private FilterTable filterTable;
     private FilterManager filterManager;
+    private TabLayout tabLayout;
+    private ChipGroup chipGroup;
+    private String versionDivider = "0";
 
     public FilterFragment() {
         // Required empty public constructor
@@ -77,9 +81,10 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
-        recyclerView = view.findViewById(R.id.modFilterTable);
+        tabLayout = view.findViewById(R.id.tab_layout);
+        chipGroup = view.findViewById(R.id.chip_group);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         Log.i("test",filterId);
 //        GameVersionFilter gameVersionFilter = new GameVersionFilter(gameVersionAdapter, recyclerView,getContext(),FilterFragment.this);
 
@@ -106,11 +111,94 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             this.filterManager = new ShaderFilter();
         }
 
-        filterAdapter = new FilterAdapter(getContext(),tes, FilterFragment.this);
-        recyclerView.setAdapter(filterAdapter);
+
         addFilterSection();
+        // Select the first tab to trigger chip display
+        if (tabLayout.getTabCount() > 0) {
+            TabLayout.Tab firstTab = tabLayout.getTabAt(0);
+            if (firstTab != null) {
+                firstTab.select(); // triggers `onTabSelected`
+            }
+        }
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String selectedHeader = tab.getText().toString();
+                chipGroup.removeAllViews();
+                for (FilterItem item : filterItemList) {
+                    if (item instanceof FilterTag && item.getHeader().equals(selectedHeader)) {
+                        addChip(item);
+                    }
+                }
+            }
+
+            @Override public void onTabUnselected(TabLayout.Tab tab) {}
+            @Override public void onTabReselected(TabLayout.Tab tab) {}
+        });
 
         return view;
+    }
+
+    private void addChip(FilterItem filterItem){
+        if (filterItem.getHeader().equals("versions")){
+            String input = filterItem.getItemName();
+            String[] parts = input.split("\\.");
+            String result = "";
+            if (parts.length >= 2) {
+                result = parts[0] + "." + parts[1] + ".";
+            }
+            if (!result.equals(versionDivider)){
+                Log.i("test","version divider: "+result);
+                versionDivider = result;
+                Chip divider = new Chip(getContext());
+                divider.setText(result+"x");
+                divider.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//                divider.setTextColor(ContextCompat.getColor(getContext(), R.color.on_primary));
+
+                // Stretch to match parent width
+                ChipGroup.LayoutParams params = new ChipGroup.LayoutParams(
+                        ChipGroup.LayoutParams.MATCH_PARENT,
+                        ChipGroup.LayoutParams.WRAP_CONTENT
+                );
+                divider.setLayoutParams(params);
+
+                divider.setChipBackgroundColorResource(R.color.primary); // Optional styling
+                divider.setClickable(false);
+                divider.setCheckable(false);
+
+                chipGroup.addView(divider);
+            }
+        }
+        Chip chip = new Chip(getContext());
+        chip.setText(filterItem.getItemName());
+        chip.setCheckable(true);
+        chip.setCheckedIconVisible(true);
+        if (filterItem.isSelected()){
+            chip.setChecked(true);
+        }
+        chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.d("test", filterItem.getItemName() + " selected");
+                    filterItem.setSelected(true);
+                    if (!filterTable.haveVersion(filterItem.getHeader()+":"+filterItem.getItemName())){
+                        filterTable.addVersion(filterItem.getHeader()+":"+filterItem.getItemName());
+                    }
+                } else {
+                    Log.d("test", filterItem.getItemName() + " unselected");
+                    filterItem.setSelected(false);
+                    filterTable.removeVersion(filterItem.getHeader()+":"+filterItem.getItemName());
+                }
+            }
+        });
+
+        chipGroup.addView(chip);
+    }
+
+    private void addTab(String tab){
+        tabLayout.addTab(tabLayout.newTab().setText(tab));
     }
 
     private void addCategoryFilter(){
@@ -118,54 +206,59 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             @Override
             public void onCategoriesLoaded(List<Category> categories) {
 //                Log.i("test", categories.toString());
-                tes.add(new FilterHeader("categories"));
+                filterItemList.add(new FilterHeader("categories"));
+                addTab("categories");
                 if (filterId.equals(URLString.modId)){
                     for (Category c:((ModFilter)filterManager).getMainCategory()) {
-                        tes.add(new FilterTag(c.getName(),"categories"));
+                        filterItemList.add(new FilterTag(c.getName(),"categories"));
                     }
                 } else if (filterId.equals(URLString.resourcePackId)) {
                     for (Category c:((ResourcePackFilter)filterManager).getMainCategory()) {
-                        tes.add(new FilterTag(c.getName(),"categories"));
+                        filterItemList.add(new FilterTag(c.getName(),"categories"));
                     }
-                    tes.add(new FilterHeader("features"));
+                    filterItemList.add(new FilterHeader("features"));
+                    addTab("features");
                     for (Category c:((ResourcePackFilter)filterManager).getFeature()) {
-                        tes.add(new FilterTag(c.getName(),"features"));
+                        filterItemList.add(new FilterTag(c.getName(),"features"));
                     }
-                    tes.add(new FilterHeader("resolutions"));
+                    filterItemList.add(new FilterHeader("resolutions"));
+                    addTab("resolutions");
                     for (Category c:((ResourcePackFilter)filterManager).getResolution()) {
-                        tes.add(new FilterTag(c.getName(),"resolutions"));
+                        filterItemList.add(new FilterTag(c.getName(),"resolutions"));
                     }
                 } else if (filterId.equals(URLString.dataPackId)) {
                     for (Category c:((DataPackFilter)filterManager).getMainCategory()) {
-                        tes.add(new FilterTag(c.getName(),"categories"));
+                        filterItemList.add(new FilterTag(c.getName(),"categories"));
                     }
                 } else if (filterId.equals(URLString.shaderId)) {
                     for (Category c:((ShaderFilter)filterManager).getMainCategory()) {
-                        tes.add(new FilterTag(c.getName(),"categories"));
+                        filterItemList.add(new FilterTag(c.getName(),"categories"));
                     }
-                    tes.add(new FilterHeader("features"));
+                    filterItemList.add(new FilterHeader("features"));
+                    addTab("features");
                     for (Category c:((ShaderFilter)filterManager).getFeature()) {
-                        tes.add(new FilterTag(c.getName(),"features"));
+                        filterItemList.add(new FilterTag(c.getName(),"features"));
                     }
-                    tes.add(new FilterHeader("performance impact"));
+                    filterItemList.add(new FilterHeader("performance impact"));
+                    addTab("performance impact");
                     for (Category c:((ShaderFilter)filterManager).getPerformanceImpact()) {
-                        tes.add(new FilterTag(c.getName(),"performance impact"));
+                        filterItemList.add(new FilterTag(c.getName(),"performance impact"));
                     }
                 } else if (filterId.equals(URLString.modPackId)) {
                     for (Category c:((ModPackFilter)filterManager).getMainCategory()) {
-                        tes.add(new FilterTag(c.getName(),"categories"));
+                        filterItemList.add(new FilterTag(c.getName(),"categories"));
                     }
                 } else if (filterId.equals(URLString.pluginId)) {
                     for (Category c:((PluginFilter)filterManager).getMainCategory()) {
-                        tes.add(new FilterTag(c.getName(),"categories"));
+                        filterItemList.add(new FilterTag(c.getName(),"categories"));
                     }
                 }
-                for (FilterItem i : tes) {
+                for (FilterItem i : filterItemList) {
                     if (filterTable.haveVersion(i.getHeader() + ":" + i.getItemName())) {
                         i.setSelected(true);
                     }
                 }
-                recyclerView.getAdapter().notifyDataSetChanged();
+//                recyclerView.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -180,16 +273,17 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
 
             @Override
             public void onGameVersionsLoaded(List<GameVersion> gameVersions) {
-                tes.add(new FilterHeader("versions"));
+                filterItemList.add(new FilterHeader("versions"));
+                addTab("versions");
                 for (GameVersion v: gameVersions) {
-                    tes.add(new FilterTag(v.getVersion(),"versions"));
+                    filterItemList.add(new FilterTag(v.getVersion(),"versions"));
                 }
-                for (FilterItem i : tes) {
+                for (FilterItem i : filterItemList) {
                     if (filterTable.haveVersion(i.getHeader() + ":" + i.getItemName())) {
                         i.setSelected(true);
                     }
                 }
-                recyclerView.getAdapter().notifyDataSetChanged();
+//                recyclerView.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -204,30 +298,31 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
             filterManager.setLoader(new LoaderCallback() {
                 @Override
                 public void onLoadersLoaded(List<Loader> loaders) {
-                    tes.add(new FilterHeader("loader"));
+                    filterItemList.add(new FilterHeader("loader"));
+                    addTab("loader");
                     if (filterId.equals(URLString.modId)){
                         for (Loader l : ((ModFilter) filterManager).getMainLoader()) {
-                            tes.add(new FilterTag(l.getName(), "loader"));
+                            filterItemList.add(new FilterTag(l.getName(), "loader"));
                         }
                     } else if (filterId.equals(URLString.shaderId)) {
                         for (Loader l : ((ShaderFilter) filterManager).getMainLoader()) {
-                            tes.add(new FilterTag(l.getName(), "loader"));
+                            filterItemList.add(new FilterTag(l.getName(), "loader"));
                         }
                     } else if (filterId.equals(URLString.modPackId)) {
                         for (Loader l : ((ModPackFilter) filterManager).getMainLoader()) {
-                            tes.add(new FilterTag(l.getName(), "loader"));
+                            filterItemList.add(new FilterTag(l.getName(), "loader"));
                         }
                     } else if (filterId.equals(URLString.pluginId)) {
                         for (Loader l : ((PluginFilter) filterManager).getMainLoader()) {
-                            tes.add(new FilterTag(l.getName(), "loader"));
+                            filterItemList.add(new FilterTag(l.getName(), "loader"));
                         }
                     }
-                    for (FilterItem i : tes) {
+                    for (FilterItem i : filterItemList) {
                         if (filterTable.haveVersion(i.getHeader() + ":" + i.getItemName())) {
                             i.setSelected(true);
                         }
                     }
-                    recyclerView.getAdapter().notifyDataSetChanged();
+//                    recyclerView.getAdapter().notifyDataSetChanged();
                 }
 
                 @Override
@@ -243,221 +338,5 @@ public class FilterFragment extends Fragment implements RecyclerViewInterface {
         addCategoryFilter();
         addLoaderFilter();
         addVersionFilter();
-    }
-
-    private void removeVersionFilter(){
-        for (GameVersion v:filterManager.getGameVersionList()) {
-            tes.removeIf(item -> item.getItemName().equals(v.getVersion()));
-        }
-    }
-
-    private void removeCategoryFilter(){
-        for (Category c: filterManager.getCategoryList()) {
-            tes.removeIf(item -> item.getItemName().equals(c.getName()) && item.getHeader().equals("categories"));
-        }
-    }
-
-    private void removeLoaderFilter(){
-        for (Loader l: filterManager.getLoader()) {
-            tes.removeIf(item -> item.getItemName().equals(l.getName()));
-        }
-    }
-
-    private void removeFeatureFilter(){
-        for (Category c: filterManager.getCategoryList()) {
-            tes.removeIf(item -> item.getItemName().equals(c.getName()) && item.getHeader().equals("features"));
-        }
-    }
-
-    private void removeResolutionFilter(){
-        for (Category c: filterManager.getCategoryList()) {
-            tes.removeIf(item -> item.getItemName().equals(c.getName()) && item.getHeader().equals("resolutions"));
-        }
-    }
-
-    private void removePerformanceImpactFilter(){
-        for (Category c: filterManager.getCategoryList()) {
-            tes.removeIf(item -> item.getItemName().equals(c.getName()) && item.getHeader().equals("performance impact"));
-        }
-    }
-
-    private void removeFilterSection(String header){
-        if (header.equals("versions")){
-            removeVersionFilter();
-        } else if (header.equals("categories")) {
-            removeCategoryFilter();
-        } else if (header.equals("loader")) {
-            removeLoaderFilter();
-        } else if (header.equals("features")) {
-            removeFeatureFilter();
-        } else if (header.equals("resolutions")) {
-            removeResolutionFilter();
-        } else if (header.equals("performance impact")) {
-            removePerformanceImpactFilter();
-        }
-    }
-
-    private void recoverVersionFilter(String header, Integer headerPosition){
-        for (GameVersion v:filterManager.getGameVersionList()) {
-            tes.add(headerPosition + 1, new FilterTag(v.getVersion(),header));
-            headerPosition++;
-        }
-    }
-
-    private void recoverCategoryFilter(String header, Integer headerPosition){
-        if (this.filterId.equals(URLString.modId)){
-            for (Category c: ((ModFilter)filterManager).getMainCategory()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.dataPackId)) {
-            for (Category c: ((DataPackFilter)filterManager).getMainCategory()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.resourcePackId)) {
-            for (Category c: ((ResourcePackFilter)filterManager).getMainCategory()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.shaderId)) {
-            for (Category c: ((ShaderFilter)filterManager).getMainCategory()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.modPackId)) {
-            for (Category c: ((ModPackFilter)filterManager).getMainCategory()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.pluginId)) {
-            for (Category c: ((PluginFilter)filterManager).getMainCategory()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        }
-    }
-
-    private void recoverLoaderFilter(String header, Integer headerPosition){
-        if (this.filterId.equals(URLString.modId)){
-            for (Loader l:((ModFilter)filterManager).getMainLoader()) {
-                tes.add(headerPosition + 1, new FilterTag(l.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.shaderId)) {
-            for (Loader l:((ShaderFilter)filterManager).getMainLoader()) {
-                tes.add(headerPosition + 1, new FilterTag(l.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.modPackId)) {
-            for (Loader l:((ModPackFilter)filterManager).getMainLoader()) {
-                tes.add(headerPosition + 1, new FilterTag(l.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.pluginId)) {
-            for (Loader l:((PluginFilter)filterManager).getMainLoader()) {
-                tes.add(headerPosition + 1, new FilterTag(l.getName(),header));
-                headerPosition++;
-            }
-        }
-    }
-
-    private void recoverFeatureFilter(String header, Integer headerPosition){
-        if (this.filterId.equals(URLString.resourcePackId)){
-            for (Category c:((ResourcePackFilter)filterManager).getFeature()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        } else if (this.filterId.equals(URLString.shaderId)) {
-            for (Category c:((ShaderFilter)filterManager).getFeature()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        }
-    }
-
-    private void recoverResolutionFilter(String header, Integer headerPosition){
-        if (this.filterId.equals(URLString.resourcePackId)){
-            for (Category c:((ResourcePackFilter)filterManager).getResolution()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        }
-    }
-
-    private void recoverPerformanceImpactFilter(String header, Integer headerPosition){
-        if (this.filterId.equals(URLString.shaderId)){
-            for (Category c:((ShaderFilter)filterManager).getPerformanceImpact()) {
-                tes.add(headerPosition + 1, new FilterTag(c.getName(),header));
-                headerPosition++;
-            }
-        }
-    }
-
-    private void recoverFilterSection(String header, Integer headerPosition){
-        if (header.equals("versions")){
-            recoverVersionFilter(header,headerPosition);
-        } else if (header.equals("categories")) {
-            recoverCategoryFilter(header,headerPosition);
-        } else if (header.equals("loader")) {
-            recoverLoaderFilter(header,headerPosition);
-        } else if (header.equals("features")) {
-            recoverFeatureFilter(header,headerPosition);
-        } else if (header.equals("resolutions")) {
-            recoverResolutionFilter(header,headerPosition);
-        }else if (header.equals("performance impact")) {
-            recoverPerformanceImpactFilter(header,headerPosition);
-        }
-    }
-
-    @Override
-    public void onItemClick(int position) {
-        String selectedTag = tes.get(position).getItemName();
-        String header = "";
-        int headerPosition = position;
-        if (tes.get(position).isTag()){
-            header = tes.get(position).getHeader();
-            Log.i( "test",selectedTag);
-
-            if (!tes.get(position).isSelected()){
-                tes.get(position).setSelected(true);
-//                tes.get(position);
-            } else {
-                tes.get(position).setSelected(false);
-            }
-
-            if (!filterTable.haveVersion(header+":"+selectedTag)){
-                filterTable.addVersion(header+":"+selectedTag);
-            } else {
-                filterTable.removeVersion(header+":"+selectedTag);
-            }
-            recyclerView.getAdapter().notifyItemChanged(position);
-        } else {
-            Log.i("test",selectedTag);
-            header = tes.get(position).getHeader();
-            boolean matched = false;
-            for (FilterItem i:tes) {
-//                Log.i("test",i.getItemName());
-                if (i.isTag() && (i.getHeader().equals(header))){
-                    removeFilterSection(header);
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                    matched = true;
-                    break;
-                }
-            }
-            if (!matched) {
-                recoverFilterSection(header,headerPosition);
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
-        }
-
-
-        List<String> versions = filterTable.getSelectedVersions().getValue();
-
-        if (versions != null) {
-            Log.i("test", "Selected versions: " + versions.toString());
-        } else {
-            Log.i("test", "Selected versions: null");
-        }
     }
 }
