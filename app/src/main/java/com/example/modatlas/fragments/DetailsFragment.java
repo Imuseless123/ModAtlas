@@ -1,5 +1,6 @@
 package com.example.modatlas.fragments;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.modatlas.R;
@@ -22,6 +24,7 @@ import com.example.modatlas.models.Project;
 import com.example.modatlas.models.ProjectVersion;
 import com.example.modatlas.models.RetrofitClient;
 import com.example.modatlas.views.ProjectVersionAdapter;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +39,12 @@ import retrofit2.Response;
 public class DetailsFragment extends Fragment {
 
     private static final String ARG_PROJECT_ID = "param1";
-    private boolean isChange = false;
     private String mProjectId;
     private Project project;
     private TextView markdownTextView;
-    private TextView change;
+    private TabLayout change;
     private RecyclerView projectVersionList;
+    private LinearLayout modVersionListHeader;
     private ModrinthApi api;
     private List<ProjectVersion> projectVersion = new ArrayList<>();
     private ProjectVersionAdapter projectVersionAdapter;
@@ -71,8 +74,11 @@ public class DetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         markdownTextView = view.findViewById(R.id.markdownText);
+        modVersionListHeader = view.findViewById(R.id.modVersionListHeader);
         api = RetrofitClient.getApi();
         change = view.findViewById(R.id.change);
+        change.addTab(change.newTab().setText("Details"));
+        change.addTab(change.newTab().setText("Mod version list"));
         projectVersionList = view.findViewById(R.id.modVersionList);
         projectVersionList.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -86,20 +92,31 @@ public class DetailsFragment extends Fragment {
     }
 
     private void initListener(){
-        change.setOnClickListener(new View.OnClickListener() {
+        change.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onClick(View v) {
-                if (!isChange){
-                    isChange = true;
-                    markdownTextView.setVisibility(INVISIBLE);
-                    projectVersionList.setVisibility(VISIBLE);
-                    change.setText("Go to Description");
-                } else {
-                    isChange = false;
-                    projectVersionList.setVisibility(INVISIBLE);
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                if (position == 0) {
+                    // Handle "Details" tab selected
+                    projectVersionList.setVisibility(GONE);
+                    modVersionListHeader.setVisibility(GONE);
                     markdownTextView.setVisibility(VISIBLE);
-                    change.setText("Go to Mod versions");
+                } else if (position == 1) {
+                    // Handle "Mod version list" tab selected
+                    markdownTextView.setVisibility(GONE);
+                    projectVersionList.setVisibility(VISIBLE);
+                    modVersionListHeader.setVisibility(VISIBLE);
                 }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // Optional: handle unselected tab
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // Optional: handle reselected tab
             }
         });
     }
