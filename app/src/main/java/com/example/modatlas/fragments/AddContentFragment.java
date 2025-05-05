@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.modatlas.R;
@@ -51,7 +52,7 @@ public class AddContentFragment extends Fragment {
     private String version;
 
     private EditText searchInput;
-    private Button searchButton;
+    private ImageButton searchButton;
     private RecyclerView recyclerView;
     private AddContentEntryAdapter adapter;
     private List<Mod> modList = new ArrayList<>();

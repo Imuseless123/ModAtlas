@@ -174,6 +174,9 @@ public class FilterFragment extends Fragment {
         chip.setText(filterItem.getItemName());
         chip.setCheckable(true);
         chip.setCheckedIconVisible(true);
+        chip.setChipBackgroundColorResource(R.color.button_on_surface);
+        chip.setTextColor(ContextCompat.getColor(getContext(), R.color.on_surface));
+
         if (filterItem.isSelected()){
             chip.setChecked(true);
         }

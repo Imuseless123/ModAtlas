@@ -42,6 +42,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/on_surface"
@@ -50,7 +51,8 @@
                 android:paddingTop="8dp"
                 app:layout_constraintStart_toEndOf="@+id/modImage"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Title" />
+                app:layout_constraintEnd_toStartOf="@+id/modDownload"
+                tools:text="Title that might be very long and should be truncated" />
 
             <TextView
                 android:id="@+id/modAuthorLabel"

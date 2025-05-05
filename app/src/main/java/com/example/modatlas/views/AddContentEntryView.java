@@ -2,12 +2,14 @@ package com.example.modatlas.views;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +24,8 @@ public class AddContentEntryView extends RelativeLayout {
     private OnActionButtonClickListener buttonClickListener;
     private String slug;
     private LoadState importState = LoadState.READY;
+    private ConstraintLayout gradientLayout;
+
 
 
     public interface OnActionButtonClickListener {
@@ -46,7 +50,8 @@ public class AddContentEntryView extends RelativeLayout {
         downloads = findViewById(R.id.downloads);
         categoryText = findViewById(R.id.categoryText);
         actionButton = findViewById(R.id.actionButton);
-
+        gradientLayout = findViewById(R.id.gradientLayout);
+        actionButton.setText("Import");
         actionButton.setOnClickListener(v -> {
             if (buttonClickListener != null) {
                 setImportState(LoadState.LOADING);
@@ -74,6 +79,7 @@ public class AddContentEntryView extends RelativeLayout {
         }
 
         downloads.setText(formatDownloads(mod.getDownloads()));
+        setGradientBackground(mod.getColor());
         slug = mod.getSlug();
 
         Glide.with(getContext()).load(mod.getIconUrl()).into(icon);
@@ -107,6 +113,23 @@ public class AddContentEntryView extends RelativeLayout {
                 actionButton.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.check));
                 actionButton.setEnabled(false); // Disable after import completes
                 break;
+        }
+    }
+    public void setGradientBackground(Integer colorInt) {
+        if (colorInt != null) {
+            int startColor = ContextCompat.getColor(gradientLayout.getContext(), R.color.background);
+            int endColor = Color.rgb(
+                    (colorInt >> 16) & 0xFF, // Extract red
+                    (colorInt >> 8) & 0xFF,  // Extract green
+                    colorInt & 0xFF          // Extract blue
+            );
+
+            GradientDrawable gradientDrawable = new GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{startColor, endColor}
+            );
+            gradientDrawable.setCornerRadius(16f); // Match the CardView's corner radius
+            gradientLayout.setBackground(gradientDrawable);
         }
     }
 

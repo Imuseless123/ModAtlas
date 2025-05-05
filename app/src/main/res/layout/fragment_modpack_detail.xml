@@ -17,7 +17,6 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
         <com.google.android.material.tabs.TabLayout
@@ -27,7 +26,7 @@
             app:tabMode="fixed"
             app:tabGravity="fill"
             app:tabIndicatorColor="@color/primary"
-            app:tabTextColor="@color/on_primary"
+            app:tabTextColor="@color/on_surface"
             app:tabSelectedTextColor="@color/primary"
             android:background="@color/surface"
             />
