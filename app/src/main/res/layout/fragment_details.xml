@@ -5,108 +5,206 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.DetailsFragment"
-    android:background="@color/surface">
+    android:background="@color/background">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <RelativeLayout
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/background"
+        android:padding="8dp"
+        >
+        <androidx.cardview.widget.CardView
+            android:layout_height="80dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-<!--            <TextView-->
-<!--                android:id="@+id/change"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="30dp"-->
-<!--                android:text="Go to Mod versions"-->
-<!--                android:textColor="@color/on_surface"-->
-<!--                android:textAlignment="center"-->
-<!--                android:layout_centerInParent="true"/>-->
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/change"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="@color/surface"
+        >
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:tabTextColor="@color/on_surface"
-                app:tabIndicatorColor="@color/primary"
-                app:tabSelectedTextColor="@color/primary"
-                android:background="@color/surface"
-                />
-        </RelativeLayout>
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/modImage"
+                    android:layout_width="84dp"
+                    android:layout_height="84dp"
+
+                    android:scaleType="centerCrop"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/ic_launcher_background"
+                    android:background="@drawable/rounded_icon"/>
+
+                <TextView
+                    android:id="@+id/modTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/on_surface"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:paddingTop="8dp"
+                    app:layout_constraintStart_toEndOf="@+id/modImage"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Title that might be very long and should be truncated" />
+
+                <TextView
+                    android:id="@+id/modAuthorLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="By"
+                    android:textColor="@color/on_surface"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@+id/modImage"
+                    app:layout_constraintTop_toBottomOf="@+id/modTitle" />
+
+                <TextView
+                    android:id="@+id/modAuthor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/on_surface"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@+id/modAuthorLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/modTitle"
+                    tools:text="author" />
+
+                <TextView
+                    android:id="@+id/modDownload"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textColor="@color/gray_400"
+                    android:textSize="14sp"
+                    android:paddingBottom="8dp"
+                    android:paddingRight="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/modImage"
+                    app:layout_constraintTop_toBottomOf="@+id/modAuthorLabel"
+                    tools:text="Download" />
 
 
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/markdownText"
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_bg"
+            android:layout_marginTop="8dp"
+            >
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/on_surface"
-                android:textSize="16sp"
-                android:autoLink="web"
-                android:layout_marginTop="10dp"
-                />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:id="@+id/modVersionListHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="vertical"
-                    android:paddingTop="10dp"
-                    android:paddingHorizontal="16dp"
-                    android:visibility="gone"
-                    >
+                android:layout_height="wrap_content">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
-
-                        <TextView
-                            android:id="@+id/modVersion"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.5"
-                            android:textColor="@color/on_surface"
-                            android:text="Mod version" />
-
-                        <TextView
-                            android:id="@+id/gameVersion"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textColor="@color/on_surface"
-                            android:text="Game version" />
-
-                        <TextView
-                            android:id="@+id/platform"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:textColor="@color/on_surface"
-                            android:text="Platform" />
-                    </LinearLayout>
-
-                    <View
-                        android:id="@+id/separator"
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_marginTop="10dp"
-                        android:background="#DAD8D8"
-                        />
-                </LinearLayout>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/modVersionList"
+                <!--            <TextView-->
+                <!--                android:id="@+id/change"-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="30dp"-->
+                <!--                android:text="Go to Mod versions"-->
+                <!--                android:textColor="@color/on_surface"-->
+                <!--                android:textAlignment="center"-->
+                <!--                android:layout_centerInParent="true"/>-->
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/change"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"/>
-            </LinearLayout>
-        </RelativeLayout>
+                    app:tabTextColor="@color/on_surface"
+                    app:tabIndicatorColor="@color/primary"
+                    app:tabSelectedTextColor="@color/primary"
+                    android:background="@drawable/rounded_bg"
+                    />
+            </RelativeLayout>
+
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/markdownText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/on_surface"
+                    android:textSize="16sp"
+                    android:autoLink="web"
+                    android:layout_marginTop="10dp"
+                    android:padding="8dp"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/modVersionListHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="vertical"
+                        android:paddingTop="10dp"
+                        android:paddingHorizontal="16dp"
+                        android:visibility="gone"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:id="@+id/modVersion"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1.5"
+                                android:textColor="@color/on_surface"
+                                android:text="Mod version" />
+
+                            <TextView
+                                android:id="@+id/gameVersion"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textColor="@color/on_surface"
+                                android:text="Game version" />
+
+                            <TextView
+                                android:id="@+id/platform"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:textColor="@color/on_surface"
+                                android:text="Platform" />
+                        </LinearLayout>
+
+                        <View
+                            android:id="@+id/separator"
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:layout_marginTop="10dp"
+                            android:background="#DAD8D8"
+                            />
+                    </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/modVersionList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="invisible"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

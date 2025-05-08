@@ -18,9 +18,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.modatlas.R;
 import com.example.modatlas.models.ModrinthApi;
 import com.example.modatlas.models.Project;
+import com.example.modatlas.models.ProjectMember;
 import com.example.modatlas.models.ProjectVersion;
 import com.example.modatlas.models.RetrofitClient;
 import com.example.modatlas.views.ProjectVersionAdapter;
@@ -48,6 +50,10 @@ public class DetailsFragment extends Fragment {
     private ModrinthApi api;
     private List<ProjectVersion> projectVersion = new ArrayList<>();
     private ProjectVersionAdapter projectVersionAdapter;
+    private ImageView modImage;
+    private TextView modTitle;
+    private TextView modAuthor;
+    private TextView modDownload;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -75,6 +81,10 @@ public class DetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         markdownTextView = view.findViewById(R.id.markdownText);
         modVersionListHeader = view.findViewById(R.id.modVersionListHeader);
+        modImage = view.findViewById(R.id.modImage);
+        modTitle = view.findViewById(R.id.modTitle);
+        modAuthor = view.findViewById(R.id.modAuthor);
+        modDownload = view.findViewById(R.id.modDownload);
         api = RetrofitClient.getApi();
         change = view.findViewById(R.id.change);
         change.addTab(change.newTab().setText("Details"));
@@ -128,7 +138,35 @@ public class DetailsFragment extends Fragment {
                     public void onResponse(Call<Project> call, Response<Project> response) {
                         if (response.body() != null) {
                             project = response.body();
+                            modTitle.setText(project.getTitle());
+                            Glide.with(requireContext())
+                                    .load(project.getIconUrl()) // Load image from URL
+                                    .into(modImage); // Set image into ImageView
+                            modDownload.setText(project.getDownloads() + " downloads");
                             setUpMarkDown(project.getBody());
+                            api.getProjectMembers(project.getSlug()).enqueue(new Callback<List<ProjectMember>>() {
+                                @Override
+                                public void onResponse(Call<List<ProjectMember>> call, Response<List<ProjectMember>> response) {
+                                    if (response.body() != null) {
+                                        List<ProjectMember> members = response.body();
+                                        StringBuilder authors = new StringBuilder();
+                                        for (int i = 0; i < members.size(); i++) {
+                                            authors.append(members.get(i).user.username);
+                                            if (i < members.size() - 1) {
+                                                authors.append(", ");
+                                            }
+                                        }
+
+                                        modAuthor.setText(authors.toString());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<ProjectMember>> call, Throwable t) {
+                                    Log.e("test", "API call failed: " + t.getMessage());
+                                }
+                            });
+
                         } else {
                             Log.e("test", "Response body is null");
                         }

@@ -6,7 +6,6 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ModrinthApi {
     @GET("search")
@@ -44,4 +43,6 @@ public interface ModrinthApi {
     Call<Project> getProjectById(@Path("id") String id);
     @GET("project/{id}/version")
     Call<List<ProjectVersion>> getProjectVersionById(@Path("id") String id);
+    @GET("project/{slug}/members")
+    Call<List<ProjectMember>> getProjectMembers(@Path("slug") String slug);
 }
